@@ -12,7 +12,7 @@ peripherals.
 
 Prerequisites
 
-sudo cpan -i Try::Tiny Device::SerialPort
+cpan -i Try::Tiny Device::SerialPort
 
 To install ( on a Raspberry Pi )
 

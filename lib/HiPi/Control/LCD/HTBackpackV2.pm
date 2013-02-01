@@ -2,7 +2,7 @@
 # Package       HiPi::Control::LCD::HTBackpackV2
 # Description:  HobbyTronics BackpackV2 LCD Controller
 # Created       Sat Nov 24 20:46:14 2012
-# SVN Id        $Id: HTBackpackV2.pm 446 2013-02-01 02:55:27Z Mark Dootson $
+# SVN Id        $Id: HTBackpackV2.pm 451 2013-02-01 19:44:12Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -99,6 +99,8 @@ use base qw( HiPi::Control::LCD );
 use feature qw( switch );
 use Carp;
 use HiPi::Constant qw( :htv2baud :htv2cmd );
+
+our $VERSION = '0.01';
 
 __PACKAGE__->create_accessors( qw( devicetype i2caddress ) );
 

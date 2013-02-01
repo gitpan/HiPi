@@ -1,11 +1,5 @@
 bcm2835/BCM2835.xs
 bcm2835/buildextlib.sh
-bcm2835/buildlib/config.h
-bcm2835/buildlib/config.log
-bcm2835/buildlib/config.status
-bcm2835/buildlib/src/.deps/bcm2835.Po
-bcm2835/buildlib/src/.deps/test.Po
-bcm2835/buildlib/stamp-h1
 bcm2835/Makefile.PL
 bcm2835/src/aclocal.m4
 bcm2835/src/AUTHORS

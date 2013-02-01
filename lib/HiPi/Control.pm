@@ -2,7 +2,7 @@
 # Package       HiPi::Control
 # Description:  Base class for all controls
 # Created       Sat Nov 24 15:48:14 2012
-# SVN Id        $Id: Control.pm 446 2013-02-01 02:55:27Z Mark Dootson $
+# SVN Id        $Id: Control.pm 451 2013-02-01 19:44:12Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -73,6 +73,8 @@ use warnings;
 use HiPi;
 use HiPi::Class;
 use base qw( HiPi::Class );
+
+our $VERSION = '0.01';
 
 __PACKAGE__->create_accessors( qw( name ) );
 

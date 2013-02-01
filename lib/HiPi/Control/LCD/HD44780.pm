@@ -2,7 +2,7 @@
 # Package       HiPi::Control::LCD::HD44780
 # Description:  Direct PIN  HD44780 Controller
 # Created       Sat Nov 24 20:48:42 2012
-# SVN Id        $Id: HD44780.pm 422 2012-12-11 23:58:10Z Mark Dootson $
+# SVN Id        $Id: HD44780.pm 451 2013-02-01 19:44:12Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,6 +20,8 @@ use HiPi::Control::LCD;
 use base qw( HiPi::Control::LCD );
 use feature qw( switch );
 use Carp;
+
+our $VERSION = '0.01';
 
 sub new {
     my ($class, $pinRS, $pinE, $pinD4, $pinD5, $pinD6, $pinD7, $systemdevice) = @_;

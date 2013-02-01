@@ -14,7 +14,7 @@
 #include "perl.h"
 #include "XSUB.h"
 #include "../ppport.h"
-#include <wiringPi.h>
+#include "src/wiringPi/wiringPi.h"
 
 MODULE = HiPi__Wiring  PACKAGE = HiPi::Wiring
 

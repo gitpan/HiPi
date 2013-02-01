@@ -2,7 +2,7 @@
 # Package       HiPi::Control::LCD::SerLCD
 # Description:  SerLCD RX Enabled LCD Controller
 # Created       Sat Nov 24 20:48:42 2012
-# SVN Id        $Id: SerLCD.pm 446 2013-02-01 02:55:27Z Mark Dootson $
+# SVN Id        $Id: SerLCD.pm 451 2013-02-01 19:44:12Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -107,6 +107,8 @@ use HiPi::Control::LCD;
 use base qw( HiPi::Control::LCD );
 use feature qw( switch );
 use Carp;
+
+our $VERSION = '0.01';
 
 use constant {
     SLCD_START_COMMAND    => chr(0xFE),
