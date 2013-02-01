@@ -3,12 +3,16 @@
 -----------------------------------------------------------------
 
 HiPi provides a high level interface to the Raspberry Pi GPIO
-together with some wrappers for some commonly libraries and
+together with some wrappers for some common libraries and
 peripherals.
 
 ----------------------------------------------------------------
  Installation
 ----------------------------------------------------------------
+
+Prerequisites
+
+sudo cpan -i Try::Tiny Device::SerialPort
 
 To install ( on a Raspberry Pi )
 
@@ -28,8 +32,3 @@ This work is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published
 by the Free Software Foundation; either version 3 of the License,
 or any later version.
-
----------------------------------------------------------------
- Acknowledgments
----------------------------------------------------------------
-

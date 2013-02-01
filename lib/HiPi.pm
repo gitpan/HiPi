@@ -2,7 +2,7 @@
 # Package       HiPi
 # Description:  High level Perl interface to the Raspberry Pi GPIO
 # Created       Fri Nov 23 11:33:11 2012
-# SVN Id        $Id: HiPi.pm 446 2013-02-01 02:55:27Z Mark Dootson $
+# SVN Id        $Id: HiPi.pm 447 2013-02-01 04:57:06Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,7 +20,7 @@ HiPi
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 SYNOPSYS
 
@@ -71,7 +71,7 @@ Copyright (C) 2012-2013 Mark Dootson, all rights reserved.
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use threads;
 use threads::shared;

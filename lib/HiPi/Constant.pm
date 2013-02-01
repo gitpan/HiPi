@@ -2,7 +2,7 @@
 # Package       HiPi::Constant
 # Description:  Utility constants for HiPi
 # Created       Fri Nov 23 22:23:29 2012
-# SVN Id        $Id: Constant.pm 446 2013-02-01 02:55:27Z Mark Dootson $
+# SVN Id        $Id: Constant.pm 447 2013-02-01 04:57:06Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -16,11 +16,11 @@ package HiPi::Constant;
 
 =head1 NAME
 
-HiPi::BCM2835 
+HiPi::Constant 
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 SYNOPSYS
 
@@ -290,6 +290,8 @@ use strict;
 use warnings;
 require Exporter;
 use base qw( Exporter );
+
+our $VERSION = '0.02';
 
 our @_rpi_const;
 
