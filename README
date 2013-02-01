@@ -1,0 +1,35 @@
+-----------------------------------------------------------------
+ Introduction
+-----------------------------------------------------------------
+
+HiPi provides a high level interface to the Raspberry Pi GPIO
+together with some wrappers for some commonly libraries and
+peripherals.
+
+----------------------------------------------------------------
+ Installation
+----------------------------------------------------------------
+
+To install ( on a Raspberry Pi )
+
+perl Makefile.PL
+make
+sudo make test
+sudo make install
+
+Note that access permissions for the GPIO requires that you run
+tests as root or a user with the necessary permissions.
+
+---------------------------------------------------------------
+ Licence
+---------------------------------------------------------------
+
+This work is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published
+by the Free Software Foundation; either version 3 of the License,
+or any later version.
+
+---------------------------------------------------------------
+ Acknowledgments
+---------------------------------------------------------------
+
