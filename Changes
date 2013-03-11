@@ -1,8 +1,3 @@
-Version 0.03  - 01 February 2012
-              - Fixed wiringPi compilation
 
-Version 0.02  - 01 February 2012
-              - Fixed HiPi::Constant pod
-
-Version 0.01  - 30 January 2013
-                First release version
+Version 0.20  - 11 March 2013
+              - Refactored HiPi module tree

@@ -2,7 +2,7 @@
 # Package       HiPi::Device::I2C
 # Description:  Wrapper for I2C communucation
 # Created       Fri Nov 23 13:55:49 2012
-# SVN Id        $Id: I2C.pm 446 2013-02-01 02:55:27Z Mark Dootson $
+# SVN Id        $Id: I2C.pm 1044 2013-03-11 19:57:44Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -14,116 +14,24 @@ package HiPi::Device::I2C;
 
 #########################################################################################
 
-=head1 NAME
-
-HiPi::Device::I2C
-
-=head1 VERSION
-
-Version 0.01
-
-=head1 SYNOPSYS
-
-    use HiPi::Device::I2C qw( ioctl );
-    
-    my $i2c = HiPi::Device::I2C->new('/dev/i2c-1');
-    
-    $i2c->select_address( 0x20 );
-    
-    $i2c->smbus_write($regadress, @bytes);
-    
-    my @bytes = $i2c->smbus_read($regadress, $numbytes);
-    
-
-=head1 DESCRIPTION
-
-Experimental interface to I2C. Currently used by HiPi::MCP23017 and HiPi::Control::LCD::HTBackpackV2 in i2c mode.
-
-=head1 METHODS
-
-=head2 new
-
-    $i2c = HiPi::Device::I2C->new('/dev/i2c-1');
-
-Pass the i2c device name to the constructor
-
-=head2 select_address
-
-    $i2c->select_address( $address );
-
-Pass the address of the i2c device you wish to control. For example, the default address of the popular MCP23017 device is 0x20
-
-    $i2c->select_address( 0x20 );
-
-=head2 smbus_write
-
-    $i2c->smbus_write( @vals );
-
-Use smbus interface to write data.
-
-If scalar @vals == 1 then calls i2c_smbus_write_byte( file, $vals[0])
-
-If scalar @vals == 2 then calls i2c_smbus_write_byte_data( file, $vals[0], $vals[1])
-
-Else calls i2c_smbus_write_i2c_block_data(file, $vals[0], \@vals[1 ..-1])
-
-=head2 smbus_read
-
-    my @vals $i2c->smbus_read( $cmdval, $numbytes );
-
-Use smbus interface to read data.
-
-If $cmdval is not defined then calls i2c_smbus_read_byte( file )
-
-If $numbytes <= 1 then calls i2c_smbus_read_byte_data( file, $cmdval)
-
-Else calls i2c_smbus_read_ic2_block_data(file, $cmdval, $numbytes)
-
-    
-=head1 LICENSE
-
-This work is free software; you can redistribute it and/or modify it 
-under the terms of the GNU General Public License as published by the 
-Free Software Foundation; either version 3 of the License, or any later 
-version.
-
-=head3 License Note
-
-I would normally release any Perl code under the Perl Artistic License
-but this module wraps several GPL / LGPL C libraries and I feel that
-the licensing of the entire distribution is simpler if the Perl code
-is under GPL too.
-
-=head1 AUTHOR
-
-Mark Dootson, C<< <mdootson at cpan.org> >>
-
-=head1 COPYRIGHT
-
-Copyright (C) 2012-2013 Mark Dootson, all rights reserved.
-
-=cut
-
-
 use strict;
 use warnings;
-use HiPi::Class;
-use base qw( HiPi::Class );
+use HiPi;
+use parent qw( HiPi::Device );
 use IO::File;
 use Fcntl;
 use XSLoader;
 use Carp;
 use Time::HiRes qw( usleep );
-use HiPi::GPIO::PAD1;
+use HiPi::Constant qw( :raspberry );
+use Try::Tiny;
+use HiPi::Utils qw( is_raspberry );
 
-our $VERSION = '0.01';
+our $VERSION = '0.20';
 
-__PACKAGE__->create_accessors( qw ( fh fno i2c_address ) );
+__PACKAGE__->create_accessors( qw ( fh fno address ) );
 
-unless($ENV{DEV_NONE_RASPBERRY_PLATFORM}) {
-    # on some other platform
-    XSLoader::load('HiPi::Device::I2C', $VERSION);
-}
+XSLoader::load('HiPi::Device::I2C', $VERSION) if is_raspberry;
 
 our @EXPORT_OK = ();
 our %EXPORT_TAGS = ( all => \@EXPORT_OK );
@@ -135,7 +43,7 @@ sub _register_exported_constants {
 }
 
 use constant {
-    I2C_RETRIES     => 0x0701, 
+    I2C_RETRIES     => 0x0701,
     I2C_TIMEOUT     => 0x0702,
     I2C_SLAVE       => 0x0703,
     I2C_TENBIT      => 0x0704,
@@ -144,6 +52,7 @@ use constant {
     I2C_RDWR        => 0x0707,
     I2C_PEC         => 0x0708,
     I2C_SMBUS       => 0x0720,
+    I2C_DEFAULT_BAUD => 100000,
 };
 
 _register_exported_constants qw(
@@ -157,27 +66,80 @@ _register_exported_constants qw(
     I2C_RDWR
     I2C_PEC
     I2C_SMBUS
+    I2C_DEFAULT_BAUD
 );
 
 
+our @_moduleinfo = (
+    { name => 'i2c_bcm2708', params => { baudrate => 100000 }, },
+    { name => 'i2c_dev',     params => {}, },
+);
 
-sub new {
-    my( $class, $devicename ) = @_;
-    
-    my $fh = IO::File->new( $devicename, O_RDWR, 0 ) or croak qq(open error on $devicename: $!\n);
-    my $self = $class->SUPER::new({
-        fh          => $fh,
-        fno         => $fh->fileno(),
-        i2c_address => 0,
-    });
-    
-    # Ensure IO Pins are correctly set
-    my $pad = HiPi::GPIO::PAD1->new;
-    $pad->prepare_I2C0;
-    return $self;
+
+sub get_module_info {
+    return @_moduleinfo;
 }
 
-sub DESTROY { $_[0]->close; }
+{
+    my $discard = __PACKAGE__->get_baudrate();
+}
+
+sub get_baudrate {
+    my $class = shift;
+    my $baudrate = HiPi::qx_sudo_shell('cat /sys/module/i2c_bcm2708/parameters/baudrate 2>&1');
+    if($?) {
+        return $_moduleinfo[0]->{params}->{baudrate};
+    }
+    chomp($baudrate);
+    $_moduleinfo[0]->{params}->{baudrate} = $baudrate;
+    return $baudrate;
+}
+
+sub set_baudrate {
+    my ($class, $newrate) = @_;
+    croak('Usage HiPi::Device::I2C->set_baudrate( $baudrate )') if ( defined($newrate) && ref($newrate) );
+    $_moduleinfo[0]->{params}->{baudrate} = $newrate;
+    $class->load_modules(1);
+}
+
+sub get_device_list {
+    # get the devicelist
+    opendir my $dh, '/dev' or croak qq(Failed to open dev : $!);
+    my @i2cdevs = grep { $_ =~ /^i2c-\d+$/ } readdir $dh;
+    closedir($dh);
+    
+    for (my $i = 0; $i < @i2cdevs; $i++) {
+        $i2cdevs[$i] = '/dev/' . $i2cdevs[$i];
+    }
+    return @i2cdevs;
+}
+
+sub new {
+    my ($class, %userparams) = @_;
+    
+    my %params = (
+        devicename   => ( RPI_BOARD_REVISION == 1 ) ? '/dev/i2c-0' : '/dev/i2c-1',
+        address      => 0,
+        fh           => undef,
+        fno          => undef,
+    );
+    
+    foreach my $key (sort keys(%userparams)) {
+        $params{$key} = $userparams{$key};
+    }
+
+    my $fh = IO::File->new( $params{devicename}, O_RDWR, 0 ) or croak qq(open error on $params{devicename}: $!\n);
+    
+    $params{fh}  = $fh;
+    $params{fno} = $fh->fileno(),
+    
+    my $self = $class->SUPER::new(%params);
+    
+    # select address if id provided
+    $self->_do_select_address( $self->address ) if $self->address;
+
+    return $self;
+}
 
 sub close {
     my $self = shift;
@@ -186,32 +148,32 @@ sub close {
         $self->fh->close;
         $self->fh( undef );
         $self->fno( undef );
-        $self->i2c_address( undef );
+        $self->address( undef );
     }
 }
 
 sub select_address {
     my ($self, $address) = @_;
-    if( $address != $self->i2c_address ) {
-        if( $self->ioctl( I2C_SLAVE, $address + 0 ) ) {
-           $self->i2c_address( $address );
-        } else {
-            croak(qq(Failed to activate address $address : $!));
-        }
+    if( $address != $self->address ) {
+        $self->_do_select_address($address);
     }
-    $self->i2c_address();
+    return $self->address;
+}
+
+sub _do_select_address {
+    my ($self, $address) = @_;
+    if( $self->ioctl( I2C_SLAVE, $address + 0 ) ) {
+        $self->address( $address );
+    } else {
+        croak(qq(Failed to activate address $address : $!));
+    }
 }
 
 sub ioctl {
     my ($self, $ioctlconst, $data) = @_;
-    _post_delay( $self->fh->ioctl( $ioctlconst, $data ) );
+    $self->fh->ioctl( $ioctlconst, $data );
 }
-
-sub _post_delay {
-    usleep( 10 );
-    return @_;
-}
-
+    
 sub i2c_write {
     croak('Not yet supported');
 }
@@ -244,59 +206,75 @@ sub smbus_read {
 }
 
 sub smbus_write_quick {
-    _post_delay(i2c_smbus_write_quick($_[0]->fno, $_[1]));
+    my($self, $command ) = @_;
+    i2c_smbus_write_quick($self->fno, $command);
 }
 
 sub smbus_read_byte {
-    _post_delay(i2c_smbus_read_byte( $_[0]->fno ));
+    my( $self ) = @_;
+    i2c_smbus_read_byte( $self->fno );
 }
 
 sub smbus_write_byte {
-    _post_delay(i2c_smbus_write_byte($_[0]->fno, $_[1]));
+    my($self, $command) = @_;
+    i2c_smbus_write_byte($self->fno, $command);
 }
 
 sub smbus_read_byte_data {
-    _post_delay(i2c_smbus_read_byte_data($_[0]->fno, $_[1]));
+    my($self, $command, $data) = @_;
+    i2c_smbus_read_byte_data($self->fno, $command);
 }
 
 sub smbus_write_byte_data {
-    _post_delay(i2c_smbus_write_byte_data($_[0]->fno, $_[1], $_[2]));
+    my($self, $command, $data) = @_;
+    i2c_smbus_write_byte_data($self->fno,  $command, $data);
 }
 
 sub smbus_read_word_data {
-    _post_delay(i2c_smbus_read_word_data($_[0]->fno, $_[1]));
+    my($self, $command) = @_;
+    i2c_smbus_read_word_data($self->fno, $command);
 }
 
 sub smbus_write_word_data {
-    _post_delay(i2c_smbus_write_word_data($_[0]->fno, $_[1], $_[2]));
+    my($self, $command, $data) = @_;
+    i2c_smbus_write_word_data($self->fno, $command, $data);
 }
 
 sub smbus_read_word_swapped {
-    _post_delay(i2c_smbus_read_word_swapped($_[0]->fno, $_[1]));
+    my($self, $command) = @_;
+    i2c_smbus_read_word_swapped($self->fno, $command);
 }
 
 sub smbus_write_word_swapped {
-    _post_delay(i2c_smbus_write_word_swapped($_[0]->fno, $_[1], $_[2]));
+    my($self, $command, $data) = @_;
+    i2c_smbus_write_word_swapped($self->fno, $command, $data);
 }
 
 sub smbus_process_call {
-    _post_delay(i2c_smbus_process_call($_[0]->fno, $_[1], $_[2]));
+    my($self, $command, $data) = @_;
+    i2c_smbus_process_call($self->fno, $command, $data);
 }
 
 sub smbus_read_block_data {
-    _post_delay(i2c_smbus_read_block_data($_[0]->fno, $_[1]));
+    my($self, $command) = @_;
+    i2c_smbus_read_block_data($self->fno, $command);
 }
 
-sub smbus_read_ic2_block_data {
-    _post_delay(i2c_smbus_read_ic2_block_data($_[0]->fno, $_[1], $_[2]));
+sub smbus_read_i2c_block_data {
+    my($self, $command, $data) = @_;
+    i2c_smbus_read_i2c_block_data($self->fno, $command, $data);
 }
 
 sub smbus_write_block_data {
-    _post_delay(i2c_smbus_write_block_data($_[0]->fno, $_[1], $_[2]));
+    my($self, $command, $data) = @_;
+    i2c_smbus_write_block_data($self->fno, $command, $data);
 }
 
 sub smbus_write_i2c_block_data {
-    _post_delay(i2c_smbus_write_i2c_block_data($_[0]->fno, $_[1], $_[2]));
+    my($self, $command, $data) = @_;
+    i2c_smbus_write_i2c_block_data($self->fno, $command, $data);
 }
 
 1;
+
+__END__

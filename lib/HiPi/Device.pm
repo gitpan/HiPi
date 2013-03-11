@@ -2,7 +2,7 @@
 # Package       HiPi::Device
 # Description:  Base class for system devices
 # Created       Sat Dec 01 18:34:18 2012
-# SVN Id        $Id: Device.pm 451 2013-02-01 19:44:12Z Mark Dootson $
+# SVN Id        $Id: Device.pm 1041 2013-03-11 19:27:15Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it
 #               under the terms of the GNU General Public License as published by the
@@ -14,72 +14,67 @@ package HiPi::Device;
 
 #########################################################################################
 
-=head1 NAME
-
-HiPi::Device
-
-=head1 VERSION
-
-Version 0.01
-
-=head1 SYNOPSYS
-
-    use HiPi::Constant qw( :raspberry :pinmode :serial
-        :spi :i2c :wiring :bcm2835 :mcp23017 :htv2cmd
-        :htv2baudrate );
-        
-    use HiPi::BCM2835 qw( :registers :memory :function
-        :pud :pad :pins :spi :pwm);
-        
-    use HiPi::GPIO::PAD1;
-    use HiPi::GPIO::PAD5;
-    use HiPi::Wiring;
-    use HiPi::Control::LCD::HTBackpackV2
-    use HiPi::Control::LCD::SerLCD
-    use HiPi::MCP23017;
-    use HiPi::cpuinfo;
-
-=head1 DESCRIPTION
-
-This module is not normally used directly in end user code
-    
-=head1 LICENSE
-
-This work is free software; you can redistribute it and/or modify it 
-under the terms of the GNU General Public License as published by the 
-Free Software Foundation; either version 3 of the License, or any later 
-version.
-
-=head3 License Note
-
-I would normally release any Perl code under the Perl Artistic License
-but this module wraps several GPL / LGPL C libraries and I feel that
-the licensing of the entire distribution is simpler if the Perl code
-is under GPL too.
-
-=head1 AUTHOR
-
-Mark Dootson, C<< <mdootson at cpan.org> >>
-
-=head1 COPYRIGHT
-
-Copyright (C) 2012-2013 Mark Dootson, all rights reserved.
-
-=cut
-
+use 5.14.0;
 use strict;
 use warnings;
-use HiPi::Class;
-use base qw( HiPi::Class );
-
-our $VERSION = '0.01';
+use parent qw( HiPi::Class );
+use HiPi;
+use HiPi::Constant qw( :raspberry );
+use Carp;
 
 __PACKAGE__->create_accessors( qw( devicename ) );
 
+our $VERSION = '0.20';
+
 sub new {
-    my $class = shift;
-    my $self = $class->SUPER::new(@_);
+    my ($class, %params) = @_;
+    my $self = $class->SUPER::new(%params);
     return $self;
+}
+
+
+sub module_is_loaded {
+    my ($class, $module) = @_;
+    my $result = HiPi::qx_sudo_shell(qq(modprobe -n --first-time  $module  2>&1));
+    return ( $result && $result =~ /ERROR/i ) ? 1 : 0;
+}
+
+sub modules_are_loaded {
+    my $class = shift;
+    my @modules  = $class->get_module_info();
+    for my $mod ( @modules ) {
+        return 0 if !$class->module_is_loaded( $mod->{name} );
+    }
+    return 1;
+}
+
+sub unload_modules {
+    my $class = shift;
+    my @modules = $class->get_module_info();
+    return unless ( @modules );
+    for (my $i = @modules - 1; $i >=0; $i--) {
+        my $module = $modules[$i];
+        my $check = $module->{name};
+        if( module_is_loaded( $module->{name} ) ) {
+            HiPi::system_sudo( qq(modprobe -r $module->{name} ) ) and croak qq(failed to unload module $module->{name} : $!);
+        }
+    }
+}
+
+sub load_modules {
+    my ( $class, $forceunload ) = @_;
+    my @modules  = $class->get_module_info();
+    return unless ( @modules );
+    
+    $class->unload_modules( @modules ) if $forceunload;
+    
+    for my $module( @modules ) {
+        my $paramstr = '';
+        while(my($key, $value) = each %{ $module->{params} }) {
+            $paramstr .= qq($key=$value );
+        }
+        HiPi::system_sudo( qq(modprobe $module->{name} $paramstr) ) and croak qq(failed to load module $module->{name} : $!);
+    }
 }
 
 sub write { 1; }
