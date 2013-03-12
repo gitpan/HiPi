@@ -24,7 +24,7 @@ no_index:
 provides:
   HiPi:
     file: lib/HiPi.pm
-    version: 0.20
+    version: 0.21
   HiPi::Apps::Control:
     file: lib/HiPi/Apps/Control.pm
     version: 0.20
@@ -162,7 +162,7 @@ provides:
     version: 0
   HiPi::BCM2835:
     file: lib/HiPi/BCM2835.pm
-    version: 0.20
+    version: 0.21
   HiPi::BCM2835::Pin:
     file: lib/HiPi/BCM2835/Pin.pm
     version: 0
@@ -189,13 +189,13 @@ provides:
     version: 0
   HiPi::Device::I2C:
     file: lib/HiPi/Device/I2C.pm
-    version: 0.20
+    version: 0.21
   HiPi::Device::OneWire:
     file: lib/HiPi/Device/OneWire.pm
-    version: 0
+    version: 0.21
   HiPi::Device::SPI:
     file: lib/HiPi/Device/SPI.pm
-    version: 0.20
+    version: 0.21
   HiPi::Device::SerialPort:
     file: lib/HiPi/Device/SerialPort.pm
     version: 0.01
@@ -246,7 +246,7 @@ provides:
     version: 0.20
   HiPi::Wiring:
     file: lib/HiPi/Wiring.pm
-    version: 0.20
+    version: 0.21
   HiPi::Wx::App:
     file: lib/HiPi/Wx/App.pm
     version: 0
@@ -292,10 +292,7 @@ provides:
   HiPi::Wx::Validator::SetValue:
     file: lib/HiPi/Wx/Validator/SetValue.pm
     version: 0
-  Wx::HtmlHelpFrame:
-    file: lib/HiPi/Wx/App.pm
-    version: 0
 resources:
   homepage: http://raspberry.znix.com/
   license: http://opensource.org/licenses/gpl-license.php
-version: 0.20
+version: 0.21

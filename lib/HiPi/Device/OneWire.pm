@@ -2,7 +2,7 @@
 # Package       HiPi::Device::OneWire
 # Description:  One Wire Device
 # Created       Sun Feb 10 02:31:12 2013
-# SVN Id        $Id: OneWire.pm 1046 2013-03-11 20:03:11Z Mark Dootson $
+# SVN Id        $Id: OneWire.pm 1069 2013-03-12 01:40:32Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -19,6 +19,8 @@ use warnings;
 use Carp;
 use HiPi;
 use parent qw( HiPi::Device );
+
+our $VERSION = '0.21';
 
 our %idmap = (
     '01' => [ '2401/11', 'silicon serial number'], 
@@ -102,7 +104,7 @@ sub list_slaves {
 sub read_data {
     my( $class, $id ) = @_;
     # return data & or errors
-    my $data = HiPi::qx_sudo_shell('cat /sys/bus/w1/devices/$id/w1_slave 2>&1');
+    my $data = HiPi::qx_sudo_shell(qq(cat /sys/bus/w1/devices/$id/w1_slave 2>&1));
     chomp($data);
     return $data;
 }

@@ -10,7 +10,7 @@ use Cwd;
 use File::Path;
 our @ISA = qw( Module::Build );
 
-our $VERSION = '0.20';
+our $VERSION = '0.21';
 
 sub process_xs_files {
 	my $self = shift;
@@ -264,11 +264,11 @@ sub hipi_build_xs {
     $self->log_info(qq(Building XS Code\n));
     
     my @modules = (
-        { name => 'HiPi', version => '0.20', autopath => 'HiPi', libs => '' },
-        { name => 'I2C',  version => '0.20', autopath => 'HiPi/Device/I2C', libs => '' },
-        { name => 'SPI',  version => '0.20', autopath => 'HiPi/Device/SPI', libs => '' },
-        { name => 'BCM2835', version => '0.20', autopath => 'HiPi/BCM2835', libs => '-Lmylib/lib -lbcm2835Static' },
-        { name => 'Wiring',  version => '0.20', autopath => 'HiPi/Wiring',  libs => '-Lmylib/lib -lwiringPiStatic -lpthread' },
+        { name => 'HiPi', version => $VERSION, autopath => 'HiPi', libs => '' },
+        { name => 'I2C',  version => $VERSION, autopath => 'HiPi/Device/I2C', libs => '' },
+        { name => 'SPI',  version => $VERSION, autopath => 'HiPi/Device/SPI', libs => '' },
+        { name => 'BCM2835', version => $VERSION, autopath => 'HiPi/BCM2835', libs => '-Lmylib/lib -lbcm2835Static' },
+        { name => 'Wiring',  version => $VERSION, autopath => 'HiPi/Wiring',  libs => '-Lmylib/lib -lwiringPiStatic -lpthread' },
     );
     
     #----------------------------------------------

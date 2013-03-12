@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Panel::Pad
 # Description:  Base for GPIO Pad panels
 # Created       Wed Feb 27 23:09:33 2013
-# SVN Id        $Id: Pad.pm 950 2013-03-01 08:50:23Z Mark Dootson $
+# SVN Id        $Id: Pad.pm 1074 2013-03-12 02:19:57Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -490,16 +490,20 @@ sub OnPropertyGridChange {
         UART1       => 'UART1',
         CTS0        => 'CTS0',
         CTS1        => 'CTS1',
-        PMW0        => 'PMW0',
+        PWM0        => 'PWM0',
         INTERRUPTS  => 'interrupts',
         HIGH        => 'value',
         DIRECTION   => 'fsel',
         PUD         => 'PUD',
     );
     
-    my $oldvalue = ( exists($namemap{$name}) )
-        ? $self->GetValidator->vdata->get_value( 'pindata' )->{$namemap{$name}}
-        : croak(qq(unknown property type $name));
+    my $oldvalue;
+    if( exists($namemap{$name}) ) {
+        $oldvalue = $self->GetValidator->vdata->get_value( 'pindata' )->{$namemap{$name}} ;
+    } else {
+        Wx::LogError(qq(unknown property type $name));
+        return;
+    }
     
     my $docommand = 1;
     

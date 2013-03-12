@@ -1,3 +1,5 @@
-
+Version 0.21  - 12 March 2013
+              - HiPi::Device::OneWire read bug fixed
+              - 
 Version 0.20  - 11 March 2013
               - Refactored HiPi module tree
