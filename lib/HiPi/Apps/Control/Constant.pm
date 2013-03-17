@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Constant
 # Description:  Application Constants
 # Created       Tue Feb 26 05:55:02 2013
-# SVN Id        $Id: Constant.pm 876 2013-02-26 07:18:11Z Mark Dootson $
+# SVN Id        $Id: Constant.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -18,6 +18,8 @@ use strict;
 use warnings;
 require Exporter;
 use base qw( Exporter );
+
+our $VERSION = '0.22';
 
 our @EXPORT = ();
 our @EXPORT_OK = ();

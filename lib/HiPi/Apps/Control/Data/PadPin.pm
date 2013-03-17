@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Data::PadPin
 # Description:  Base Class for Pads
 # Created       Tue Feb 26 04:46:27 2013
-# SVN Id        $Id: PadPin.pm 940 2013-03-01 02:49:18Z Mark Dootson $
+# SVN Id        $Id: PadPin.pm 1075 2013-03-12 02:53:45Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,6 +20,8 @@ use warnings;
 use parent qw( HiPi::Wx::Validator::Data );
 use HiPi::Constant qw( :raspberry :i2c :spi :serial :pwm  );
 use Wx qw( wxTheApp );
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw( gpionum rpinum ) );
 

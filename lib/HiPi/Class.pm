@@ -2,7 +2,7 @@
 # Package       HiPi::Class
 # Description:  base class
 # Created       Sat Nov 24 15:51:05 2012
-# SVN Id        $Id: Class.pm 1026 2013-03-11 08:55:02Z Mark Dootson $
+# SVN Id        $Id: Class.pm 1202 2013-03-13 23:59:00Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -16,8 +16,7 @@ package HiPi::Class;
 
 use strict;
 use warnings;
-require Exporter;
-use base qw( Exporter );
+use parent qw( Exporter );
 
 our $VERSION = '0.20';
 

@@ -2,7 +2,7 @@
 # Package       HiPi::Wx::ValidatedCheckBox
 # Description:  Validated CheckBox
 # Created       Mon Feb 25 13:27:30 2013
-# SVN Id        $Id: ValidatedCheckBox.pm 971 2013-03-05 23:13:54Z Mark Dootson $
+# SVN Id        $Id: ValidatedCheckBox.pm 1075 2013-03-12 02:53:45Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -18,6 +18,8 @@ use strict;
 use warnings;
 use Wx qw( :checkbox :id );
 use base qw( Wx::CheckBox HiPi::Class );
+
+our $VERSION = '0.22';
 
 sub new {
     my ($class, $parent, $label, $vdata, $vdatafield ) = @_;

@@ -2,7 +2,7 @@
 # Package       HiPi::Wx::Panel
 # Description:  Panel with validation super powers
 # Created       Tue Feb 26 04:50:05 2013
-# SVN Id        $Id: Panel.pm 876 2013-02-26 07:18:11Z Mark Dootson $
+# SVN Id        $Id: Panel.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,6 +20,8 @@ use Wx qw( :id :misc :panel :window );
 use base qw( Wx::Panel HiPi::Class );
 
 our @properties = qw( ValidationData );
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_both_accessors( @properties );
 

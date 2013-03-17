@@ -2,7 +2,7 @@
 # Package       HiPi::Device::GPIO
 # Description:  System GPIO Device
 # Created       Wed Feb 20 02:40:29 2013
-# SVN Id        $Id: GPIO.pm 1000 2013-03-06 07:44:22Z Mark Dootson $
+# SVN Id        $Id: GPIO.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -22,6 +22,8 @@ use Carp;
 use Try::Tiny;
 use HiPi::Device::GPIO::Pin;
 use HiPi;
+
+our $VERSION = '0.22';
 
 use constant {
     DEV_GPIO_PIN_STATUS_NONE         => 0x00,

@@ -2,7 +2,7 @@
 # Package       HiPi::Device
 # Description:  Base class for system devices
 # Created       Sat Dec 01 18:34:18 2012
-# SVN Id        $Id: Device.pm 1041 2013-03-11 19:27:15Z Mark Dootson $
+# SVN Id        $Id: Device.pm 1439 2013-03-17 03:19:41Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it
 #               under the terms of the GNU General Public License as published by the
@@ -55,7 +55,7 @@ sub unload_modules {
     for (my $i = @modules - 1; $i >=0; $i--) {
         my $module = $modules[$i];
         my $check = $module->{name};
-        if( module_is_loaded( $module->{name} ) ) {
+        if( $class->module_is_loaded( $module->{name} ) ) {
             HiPi::system_sudo( qq(modprobe -r $module->{name} ) ) and croak qq(failed to unload module $module->{name} : $!);
         }
     }

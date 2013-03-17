@@ -2,7 +2,7 @@
 # Package       HiPi::BCM2835
 # Description:  Wrapper for bcm2835 C library - Access to /dev/mem
 # Created       Fri Nov 23 13:55:49 2012
-# SVN Id        $Id: BCM2835.pm 1070 2013-03-12 01:48:47Z Mark Dootson $
+# SVN Id        $Id: BCM2835.pm 1285 2013-03-15 01:44:24Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -24,7 +24,7 @@ use HiPi;
 use HiPi::Utils qw( is_raspberry );
 use HiPi::Constant qw( :raspberry :spi :i2c);
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
 if( is_raspberry ) {
     XSLoader::load('HiPi::BCM2835', $VERSION);
@@ -591,13 +591,13 @@ _register_exported_constants( qw(
 #-------------------------------------------------------------
 
 use constant {
-    BCM2835_BSC_C                    => 0x0000,      # BSC Master Control
-    BCM2835_BSC_S 		     => 0x0004,      # BSC Master Status
+    BCM2835_BSC_C                => 0x0000,      # BSC Master Control
+    BCM2835_BSC_S 		         => 0x0004,      # BSC Master Status
     BCM2835_BSC_DLEN		     => 0x0008,      # BSC Master Data Length
-    BCM2835_BSC_A 		     => 0x000c,      # BSC Master Slave Address
+    BCM2835_BSC_A 		         => 0x000c,      # BSC Master Slave Address
     BCM2835_BSC_FIFO		     => 0x0010,      # BSC Master Data FIFO
-    BCM2835_BSC_DIV		     => 0x0014,      # BSC Master Clock Divider
-    BCM2835_BSC_DEL		     => 0x0018,      # BSC Master Data Delay
+    BCM2835_BSC_DIV		         => 0x0014,      # BSC Master Clock Divider
+    BCM2835_BSC_DEL		         => 0x0018,      # BSC Master Data Delay
     BCM2835_BSC_CLKT		     => 0x001c,      # BSC Master Clock Stretch Timeout
     BCM2835_BSC_C_I2CEN 	     => 0x00008000,  # I2C Enable, 0 = disabled, 1 = enabled
     BCM2835_BSC_C_INTR 		     => 0x00000400,  # Interrupt on RX
@@ -695,16 +695,21 @@ _register_exported_constants( qw(
         delayMicroseconds gpio_write gpio_write_multi gpio_write_mask
         gpio_set_pud spi_begin spi_end spi_setBitOrder spi_setClockDivider
         spi_setDataMode spi_chipSelect spi_setChipSelectPolarity spi_transfer
-        i2c_begin i2c_end
-        i2c_setSlaveAddress i2c_setClockDivider i2c_write i2c_read
         st_read st_delay
     ) ) {
         no strict 'refs';
         my $subkey  = __PACKAGE__  . qq(::$method);
         my $funckey = qq(bcm2835_$method);
         *{$subkey} = sub { shift; &$funckey( @_ ); };
-        
     }
+}
+
+sub i2c_read {
+    my($self, $numbytes) = @_;
+    $numbytes ||= 1;
+    my $buffer = chr(0) x $numbytes;
+    bcm2835_i2c_read( $buffer, $numbytes );
+    return $buffer;
 }
 
 our @_altnames = (

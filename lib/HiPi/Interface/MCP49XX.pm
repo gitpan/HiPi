@@ -2,7 +2,7 @@
 # Package       HiPi::Interface::MCP49XX
 # Description:  Control MCP49XX Digital to Analog Series
 # Created       Sun Dec 02 01:42:27 2012
-# SVN Id        $Id: MCP49XX.pm 1026 2013-03-11 08:55:02Z Mark Dootson $
+# SVN Id        $Id: MCP49XX.pm 1077 2013-03-13 10:05:06Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -63,7 +63,7 @@ use constant {
     $EXPORT_TAGS{mcp} = \@const;
 }
 
-__PACKAGE__->create_accessors( qw( bitsperword minvar type
+__PACKAGE__->create_accessors( qw( bitsperword minvar type devicename
                                    dualchannel canbuffer buffer gain
                                    writemask shiftvalue shiftbits ) );
 

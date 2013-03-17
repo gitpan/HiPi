@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::MainPanel
 # Description:  Main Panel For Frame
 # Created       Wed Feb 27 16:11:19 2013
-# SVN Id        $Id: MainPanel.pm 1014 2013-03-06 13:19:47Z Mark Dootson $
+# SVN Id        $Id: MainPanel.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -18,6 +18,8 @@ use strict;
 use warnings;
 use parent qw( HiPi::Wx::Panel );
 use Wx qw( wxTheApp :id :misc :window :panel :sizer );
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw( datapanel ) );
 

@@ -14,6 +14,8 @@
 use strict;
 use warnings;
 
+our $VERSION = '0.22';
+
 if($<) {
     my $msg = qq(\nThis script requires administrator permissions to run. );
     $msg .= qq(You must be in a graphical environment. Run the script using:);

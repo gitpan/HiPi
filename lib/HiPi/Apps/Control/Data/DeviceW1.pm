@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Data::DeviceW1
 # Description:  One Wire data
 # Created       Fri Mar 01 15:53:01 2013
-# SVN Id        $Id: DeviceW1.pm 1042 2013-03-11 19:47:59Z Mark Dootson $
+# SVN Id        $Id: DeviceW1.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -22,6 +22,8 @@ use Wx qw( wxTheApp );;
 use HiPi::Utils qw( is_raspberry );
 use HiPi::Device::OneWire;
 use Carp;
+
+our $VERSION = '0.22';
 
 sub new {
     my ($class, $readonly) = @_;

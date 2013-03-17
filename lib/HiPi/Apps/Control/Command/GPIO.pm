@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Command::GPIO
 # Description:  GPIO Commands
 # Created       Fri Mar 01 02:09:39 2013
-# SVN Id        $Id: GPIO.pm 950 2013-03-01 08:50:23Z Mark Dootson $
+# SVN Id        $Id: GPIO.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -21,6 +21,8 @@ use parent qw( HiPi::Class );
 use Wx qw( wxTheApp );
 use Carp;
 use HiPi::Constant qw( :raspberry );
+
+our $VERSION = '0.22';
 
 sub new {
     my $class = shift;

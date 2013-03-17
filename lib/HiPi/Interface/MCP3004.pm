@@ -2,7 +2,7 @@
 # Package       HiPi::Interface::MCP3004
 # Description:  Control MCP3004 Analog 2 Digital
 # Created       Sun Dec 02 01:42:27 2012
-# SVN Id        $Id: MCP3004.pm 1026 2013-03-11 08:55:02Z Mark Dootson $
+# SVN Id        $Id: MCP3004.pm 1077 2013-03-13 10:05:06Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -19,6 +19,8 @@ use warnings;
 use parent qw( HiPi::Interface );
 use Carp;
 use HiPi::Device::SPI qw( :spi );
+
+__PACKAGE__->create_accessors( qw( devicename ) );
 
 our $VERSION = '0.20';
 
@@ -46,8 +48,6 @@ use constant {
     push( @EXPORT_OK, @const );
     $EXPORT_TAGS{mcp} = \@const;
 }
-
-# __PACKAGE__->create_accessors( qw(  ) );
 
 sub new {
     my( $class, %userparams ) = @_;

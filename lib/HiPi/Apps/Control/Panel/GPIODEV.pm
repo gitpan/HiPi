@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Panel::GPIODEV
 # Description:  Base for Device panels
 # Created       Wed Feb 27 23:09:33 2013
-# SVN Id        $Id: GPIODEV.pm 1007 2013-03-06 09:27:30Z Mark Dootson $
+# SVN Id        $Id: GPIODEV.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -27,6 +27,8 @@ use HiPi::Utils;
 use Wx::Event( qw( EVT_BUTTON EVT_CHECKBOX EVT_LIST_ITEM_SELECTED EVT_LIST_ITEM_DESELECTED) );
 use Try::Tiny;
 use HiPi::Device::GPIO;
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw( list group btnexport btnmode btnlevel btnlogic btnedge device));
 

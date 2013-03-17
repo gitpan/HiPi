@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Data::RInfo
 # Description:  General Info
 # Created       Fri Mar 01 15:53:01 2013
-# SVN Id        $Id: RInfo.pm 1014 2013-03-06 13:19:47Z Mark Dootson $
+# SVN Id        $Id: RInfo.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -19,6 +19,8 @@ use strict;
 use warnings;
 use parent qw( HiPi::Wx::Validator::Data );
 use HiPi::RaspberryPi;
+
+our $VERSION = '0.22';
 
 sub new {
     my ($class, $readonly) = @_;

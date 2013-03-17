@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::SelectPanel
 # Description:  Select Manage Panel
 # Created       Mon Feb 25 13:29:44 2013
-# SVN Id        $Id: SelectPanel.pm 1014 2013-03-06 13:19:47Z Mark Dootson $
+# SVN Id        $Id: SelectPanel.pm 1075 2013-03-12 02:53:45Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,6 +20,8 @@ use Wx qw( :comboctrl :window :bitmap wxTheApp :id :misc);
 use base qw( Wx::BitmapComboBox );
 use HiPi::Language;
 use Carp;
+
+our $VERSION = '0.22';
 
 use constant {
     SELECT_RASP_INFO    => 0,

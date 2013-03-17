@@ -2,7 +2,7 @@
 # Package       HiPi::Wx::Common
 # Description:  Base Class For Wx Apps
 # Created       Mon Feb 25 13:27:30 2013
-# SVN Id        $Id: Common.pm 876 2013-02-26 07:18:11Z Mark Dootson $
+# SVN Id        $Id: Common.pm 1075 2013-03-12 02:53:45Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -14,6 +14,8 @@ package HiPi::Wx::Common;
 use strict;
 use warnings;
 use HiPi::Language;
+
+our $VERSION = '0.22';
 
 use Wx qw( wxOK wxICON_ERROR wxOK wxICON_INFORMATION wxYES_NO wxICON_QUESTION wxYES
            wxICON_EXCLAMATION wxICON_WARNING wxICON_HAND

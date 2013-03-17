@@ -2,7 +2,7 @@
 # Package       HiPi::Device::I2C
 # Description:  Wrapper for I2C communucation
 # Created       Fri Nov 23 13:55:49 2012
-# SVN Id        $Id: I2C.pm 1070 2013-03-12 01:48:47Z Mark Dootson $
+# SVN Id        $Id: I2C.pm 1405 2013-03-16 20:12:13Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -24,12 +24,11 @@ use XSLoader;
 use Carp;
 use Time::HiRes qw( usleep );
 use HiPi::Constant qw( :raspberry );
-use Try::Tiny;
 use HiPi::Utils qw( is_raspberry );
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
-__PACKAGE__->create_accessors( qw ( fh fno address ) );
+__PACKAGE__->create_accessors( qw ( fh fno address i2cbuffer busmode ) );
 
 XSLoader::load('HiPi::Device::I2C', $VERSION) if is_raspberry;
 
@@ -52,7 +51,17 @@ use constant {
     I2C_RDWR        => 0x0707,
     I2C_PEC         => 0x0708,
     I2C_SMBUS       => 0x0720,
+    
     I2C_DEFAULT_BAUD => 100000,
+    
+    I2C_M_TEN          => 0x0010,
+    I2C_M_RD		   => 0x0001,
+    I2C_M_NOSTART	   => 0x4000,
+    I2C_M_REV_DIR_ADDR => 0x2000,
+    I2C_M_IGNORE_NAK   => 0x1000,
+    I2C_M_NO_RD_ACK	   => 0x0800,
+    I2C_M_RECV_LEN	   => 0x0400,
+
 };
 
 _register_exported_constants qw(
@@ -67,6 +76,15 @@ _register_exported_constants qw(
     I2C_PEC
     I2C_SMBUS
     I2C_DEFAULT_BAUD
+    
+    I2C_M_TEN 
+    I2C_M_RD
+    I2C_M_NOSTART
+    I2C_M_REV_DIR_ADDR
+    I2C_M_IGNORE_NAK 
+    I2C_M_NO_RD_ACK	
+    I2C_M_RECV_LEN
+    
 );
 
 
@@ -122,6 +140,8 @@ sub new {
         address      => 0,
         fh           => undef,
         fno          => undef,
+        i2cbuffer    => [],
+        busmode      => 'smbus',
     );
     
     foreach my $key (sort keys(%userparams)) {
@@ -173,14 +193,100 @@ sub ioctl {
     my ($self, $ioctlconst, $data) = @_;
     $self->fh->ioctl( $ioctlconst, $data );
 }
+
+#-------------------------------------------
+# Methods that honour busmode (smbus or i2c)
+#-------------------------------------------
+
+sub bus_write {
+    my ( $self, @bytes ) = @_;
+    if( $self->busmode eq 'smbus' ) {
+        return $self->smbus_write( @bytes );
+    } else {
+        return $self->i2c_write( @bytes );
+    }
+}
+
+sub bus_read {
+    my ($self, $cmdval, $numbytes) = @_;
+    if( $self->busmode eq 'smbus' ) {
+        return $self->smbus_read( $cmdval, $numbytes );
+    } else {
+        return $self->i2c_read_register($cmdval, $numbytes );
+    }
+}
+
+sub bus_read_bits {
+    my($self, $regaddr, $numbytes) = @_;
+    $numbytes ||= 1;
+    my @bytes = $self->bus_read($regaddr, $numbytes);
+    my @bits;
+    while( defined(my $byte = shift @bytes )) {
+        my $checkbits = 0b00000001;
+        for( my $i = 0; $i < 8; $i++ ) {
+            my $val = ( $byte & $checkbits ) ? 1 : 0;
+            push( @bits, $val );
+            $checkbits *= 2;
+        }
+    }
+    return @bits;
+}
+
+sub bus_write_bits {
+    my($self, $register, @bits) = @_;
+    my $bitcount  = @bits;
+    my $bytecount = $bitcount / 8;
+    if( $bitcount % 8 ) { croak(qq(The number of bits $bitcount cannot be ordered into bytes)); }
+    my @bytes;
+    while( $bytecount ) {
+        my $byte = 0;
+        for(my $i = 0; $i < 8; $i++ ) {
+            $byte += ( $bits[$i] << $i );   
+        }
+        push(@bytes, $byte);
+        $bytecount --;
+    }
+    $self->bus_write($register, @bytes);
+}
+
+#-------------------------------------------
+# I2C interface
+#-------------------------------------------
     
 sub i2c_write {
-    croak('Not yet supported');
+    my( $self, @bytes ) = @_;
+    my $buffer = pack('C*', @bytes, '0');
+    my $len = @bytes;
+    my $result = _i2c_write($self->fno, $self->address, $buffer, $len );
+    croak qq(i2c_write failed with return value $result) if $result;
 }
 
 sub i2c_read {
-    croak('Not yet supported');
+    my($self, $numbytes) = @_;
+    $numbytes ||= 1;
+    my $buffer = '0' x ( $numbytes + 1 );
+    my $result = _i2c_read($self->fno, $self->address, $buffer, $numbytes );
+    croak qq(i2c_read failed with return value $result) if $result;
+    my $template = ( $numbytes > 1 ) ? 'C' . $numbytes : 'C';
+    my @vals = unpack($template, $buffer );
+    return @vals;
 }
+
+sub i2c_read_register {
+    my($self, $register, $numbytes) = @_;
+    $numbytes ||= 1;
+    my $rbuffer = '0' x ( $numbytes + 1 );
+    my $wbuffer = pack('C', $register);
+    my $result = _i2c_read_register($self->fno, $self->address, $wbuffer, $rbuffer, $numbytes );
+    croak qq(i2c_read_register failed with return value $result) if $result;
+    my $template = ( $numbytes > 1 ) ? 'C' . $numbytes : 'C';
+    my @vals = unpack($template, $rbuffer );
+    return @vals;
+}
+
+#-------------------------------------------
+# SMBus interface
+#-------------------------------------------
 
 sub smbus_write {
     my ($self, @bytes) = @_;

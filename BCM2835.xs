@@ -24,6 +24,279 @@
 #define XSRPI_INT_HIGH    0x10
 #define XSRPI_INT_LOW     0x20
 
+/*----------------------------------------------------------------
+ * C CODE SECTION
+ *
+ * why replace base bcm2835 sections?
+ * because I wanted to be able to specify
+ * different BSC peripherals for I2C
+ *----------------------------------------------------------------*/
+
+void hipi_i2c_setSlaveAddress(volatile uint32_t* baseaddress, uint8_t addr );
+void hipi_i2c_setClockDivider( volatile uint32_t* baseaddress, uint16_t divider );
+uint8_t hipi_i2c_write( volatile uint32_t* baseaddress, const char * buf, uint32_t len );
+uint8_t hipi_i2c_read( volatile uint32_t* baseaddress, char* buf, uint32_t len );
+uint8_t hipi_i2c_read_register_rs( volatile uint32_t* baseaddress, char* regaddr, char* readbuf, uint32_t len );
+
+
+void hipi_i2c_setSlaveAddress(volatile uint32_t* baseaddress, uint8_t addr )
+{
+   	volatile uint32_t* paddr = baseaddress + BCM2835_BSC_A/4;
+	bcm2835_peri_write(paddr, addr);
+}
+
+void hipi_i2c_setClockDivider( volatile uint32_t* baseaddress, uint16_t divider )
+{
+    volatile uint32_t* paddr = baseaddress + BCM2835_BSC_DIV/4;
+    bcm2835_peri_write(paddr, divider);
+}
+
+uint8_t hipi_i2c_write( volatile uint32_t* baseaddress, const char* buf, uint32_t len )
+{
+    volatile uint32_t* dlen    = baseaddress + BCM2835_BSC_DLEN/4;
+    volatile uint32_t* fifo    = baseaddress + BCM2835_BSC_FIFO/4;
+    volatile uint32_t* status  = baseaddress + BCM2835_BSC_S/4;
+    volatile uint32_t* control = baseaddress + BCM2835_BSC_C/4;
+    volatile uint32_t* divaddr = baseaddress + BCM2835_BSC_DIV/4;
+    
+    uint16_t divider = bcm2835_peri_read(divaddr);
+    int i2c_byte_wait_us = ((float)divider / BCM2835_CORE_CLK_HZ) * 1000000 * 9;
+
+    uint32_t remaining = len;
+    uint32_t i = 0;
+    uint8_t reason = BCM2835_I2C_REASON_OK;
+
+    // Clear FIFO
+    bcm2835_peri_set_bits(control, BCM2835_BSC_C_CLEAR_1 , BCM2835_BSC_C_CLEAR_1 );
+    // Clear Status
+	bcm2835_peri_write_nb(status, BCM2835_BSC_S_CLKT | BCM2835_BSC_S_ERR | BCM2835_BSC_S_DONE);
+	// Set Data Length
+    bcm2835_peri_write_nb(dlen, len);
+    // pre populate FIFO with up to 10 bytes ( an arbitrary num less than 16 )
+    while( remaining && ( i < 10 ) )
+    {
+        bcm2835_peri_write_nb(fifo, buf[i]);
+        i++;
+        remaining--;
+    }
+    
+    // Enable device and start transfer
+    bcm2835_peri_write_nb(control, BCM2835_BSC_C_I2CEN | BCM2835_BSC_C_ST);
+    
+    // wait for transaction to start
+    while ( !( bcm2835_peri_read(status) & BCM2835_BSC_S_TA ) )
+    {
+        bcm2835_delayMicroseconds(10);
+    }
+    
+    // write remaining data
+    while (bcm2835_peri_read(status) & BCM2835_BSC_S_TA )
+    {
+    	while ((bcm2835_peri_read(status) & BCM2835_BSC_S_TXD) && remaining)
+    	{
+        	// Write to FIFO, no barrier
+        	bcm2835_peri_write_nb(fifo, buf[i]);
+        	i++;
+        	remaining--;
+    	}
+    	// wait
+    	bcm2835_delayMicroseconds(i2c_byte_wait_us);
+    }
+
+    // Received a NACK
+    if (bcm2835_peri_read(status) & BCM2835_BSC_S_ERR)
+    {
+		reason = BCM2835_I2C_REASON_ERROR_NACK;
+    }
+
+    // Received Clock Stretch Timeout
+    else if (bcm2835_peri_read(status) & BCM2835_BSC_S_CLKT)
+    {
+		reason = BCM2835_I2C_REASON_ERROR_CLKT;
+    }
+
+    // Not all data is sent
+    else if (remaining)
+    {
+		reason = BCM2835_I2C_REASON_ERROR_DATA;
+    }
+
+    bcm2835_peri_set_bits(control, BCM2835_BSC_S_DONE , BCM2835_BSC_S_DONE);
+
+    return reason;
+}
+
+
+uint8_t hipi_i2c_read( volatile uint32_t* baseaddress, char* buf, uint32_t len )
+{
+    volatile uint32_t* dlen    = baseaddress + BCM2835_BSC_DLEN/4;
+    volatile uint32_t* fifo    = baseaddress + BCM2835_BSC_FIFO/4;
+    volatile uint32_t* status  = baseaddress + BCM2835_BSC_S/4;
+    volatile uint32_t* control = baseaddress + BCM2835_BSC_C/4;
+    volatile uint32_t* divaddr = baseaddress + BCM2835_BSC_DIV/4;
+    
+    uint16_t divider = bcm2835_peri_read(divaddr);
+    int i2c_byte_wait_us = ((float)divider / BCM2835_CORE_CLK_HZ) * 1000000 * 9;
+
+    uint32_t remaining = len;
+    uint32_t i = 0;
+    uint8_t reason = BCM2835_I2C_REASON_OK;
+    
+    // Clear FIFO
+    bcm2835_peri_set_bits(control, BCM2835_BSC_C_CLEAR_1 , BCM2835_BSC_C_CLEAR_1 );
+    // Clear Status
+	bcm2835_peri_write_nb(status, BCM2835_BSC_S_CLKT | BCM2835_BSC_S_ERR | BCM2835_BSC_S_DONE);
+	// Set Data Length
+    bcm2835_peri_write_nb(dlen, len);
+    // Start read
+    bcm2835_peri_write_nb(control, BCM2835_BSC_C_I2CEN | BCM2835_BSC_C_ST | BCM2835_BSC_C_READ);
+    
+    // poll for transfer has started
+    while ( !( bcm2835_peri_read(status) & BCM2835_BSC_S_TA ) )
+    {
+        bcm2835_delayMicroseconds(10);
+    }    
+    
+    // empty FIFO as it is populated
+    while (bcm2835_peri_read(status) & BCM2835_BSC_S_TA)
+    {
+    	while (bcm2835_peri_read(status) & BCM2835_BSC_S_RXD)
+    	{
+    		// Read from FIFO, no barrier
+    		buf[i] = bcm2835_peri_read_nb(fifo);
+        	i++;
+        	remaining--;
+    	}
+    	// When remaining data is to be received, then wait for a data in FIFO
+        
+    	bcm2835_delayMicroseconds(i2c_byte_wait_us);
+    }
+    
+    // transfer has finished - grab any remaining stuff in FIFO
+    while (remaining && (bcm2835_peri_read(status) & BCM2835_BSC_S_RXD))
+    {
+        // Read from FIFO, no barrier
+        buf[i] = bcm2835_peri_read_nb(fifo);
+        i++;
+        remaining--;
+    }
+    
+    // Received a NACK
+    if (bcm2835_peri_read(status) & BCM2835_BSC_S_ERR)
+    {
+		reason = BCM2835_I2C_REASON_ERROR_NACK;
+    }
+
+    // Received Clock Stretch Timeout
+    else if (bcm2835_peri_read(status) & BCM2835_BSC_S_CLKT)
+    {
+		reason = BCM2835_I2C_REASON_ERROR_CLKT;
+    }
+
+    // Not all data is received
+    else if (remaining)
+    {
+		reason = BCM2835_I2C_REASON_ERROR_DATA;
+    }
+
+    bcm2835_peri_set_bits(control, BCM2835_BSC_S_DONE , BCM2835_BSC_S_DONE);
+
+    return reason;
+}
+
+
+uint8_t hipi_i2c_read_register_rs( volatile uint32_t* baseaddress, char* regaddr, char* readbuf, uint32_t len )
+{   
+    volatile uint32_t* dlen    = baseaddress + BCM2835_BSC_DLEN/4;
+    volatile uint32_t* fifo    = baseaddress + BCM2835_BSC_FIFO/4;
+    volatile uint32_t* status  = baseaddress + BCM2835_BSC_S/4;
+    volatile uint32_t* control = baseaddress + BCM2835_BSC_C/4;
+    volatile uint32_t* divaddr = baseaddress + BCM2835_BSC_DIV/4;
+    
+    uint16_t divider = bcm2835_peri_read(divaddr);
+    int i2c_byte_wait_us = ((float)divider / BCM2835_CORE_CLK_HZ) * 1000000 * 9;
+    int i = 0;
+    
+    uint32_t remaining = len;
+    uint8_t reason = BCM2835_I2C_REASON_OK;
+    
+    // Clear FIFO
+    bcm2835_peri_set_bits(control, BCM2835_BSC_C_CLEAR_1 , BCM2835_BSC_C_CLEAR_1 );
+    // Clear Status
+	bcm2835_peri_write_nb(status, BCM2835_BSC_S_CLKT | BCM2835_BSC_S_ERR | BCM2835_BSC_S_DONE);
+	// Set Data Length
+    bcm2835_peri_write_nb(dlen, 1);
+    // Enable device and start transfer
+    bcm2835_peri_write_nb(control, BCM2835_BSC_C_I2CEN);
+    bcm2835_peri_write_nb(fifo, regaddr[0]);
+    bcm2835_peri_write_nb(control, BCM2835_BSC_C_I2CEN | BCM2835_BSC_C_ST);
+    
+    // poll for transfer has started
+    while ( !( bcm2835_peri_read(status) & BCM2835_BSC_S_TA ) )
+    {
+        bcm2835_delayMicroseconds(10);
+    }
+    
+    // Send a start-read
+    bcm2835_peri_write_nb(dlen, len);
+    bcm2835_peri_write_nb(control, BCM2835_BSC_C_I2CEN | BCM2835_BSC_C_ST  | BCM2835_BSC_C_READ );
+    
+    // wait for write and first byte back
+    
+    bcm2835_delayMicroseconds(i2c_byte_wait_us * 3);
+    
+    // empty FIFO as it is populated
+    while (bcm2835_peri_read(status) & BCM2835_BSC_S_TA)
+    {
+    	while (bcm2835_peri_read(status) & BCM2835_BSC_S_RXD)
+    	{
+    		// Read from FIFO, no barrier
+    		readbuf[i] = bcm2835_peri_read_nb(fifo);
+        	i++;
+        	remaining--;
+    	}
+    	// When remaining data is to be received, then wait for a data in FIFO
+    	bcm2835_delayMicroseconds(i2c_byte_wait_us);
+    }
+    
+    // transfer has finished - grab any remaining stuff in FIFO
+    while (remaining && (bcm2835_peri_read(status) & BCM2835_BSC_S_RXD))
+    {
+        // Read from FIFO, no barrier
+        readbuf[i] = bcm2835_peri_read_nb(fifo);
+        i++;
+        remaining--;
+    }
+    
+    // Received a NACK
+    if (bcm2835_peri_read(status) & BCM2835_BSC_S_ERR)
+    {
+		reason = BCM2835_I2C_REASON_ERROR_NACK;
+    }
+
+    // Received Clock Stretch Timeout
+    else if (bcm2835_peri_read(status) & BCM2835_BSC_S_CLKT)
+    {
+		reason = BCM2835_I2C_REASON_ERROR_CLKT;
+    }
+
+    // Not all data is sent
+    else if (remaining)
+    {
+		reason = BCM2835_I2C_REASON_ERROR_DATA;
+    }
+
+    bcm2835_peri_set_bits(control, BCM2835_BSC_S_DONE , BCM2835_BSC_S_DONE);
+
+    return reason;
+}
+
+
+/*----------------------------------------------
+ * Perl Section
+ *----------------------------------------------*/
+
+
 MODULE = HiPi::BCM2835  PACKAGE = HiPi::BCM2835
 
 #
@@ -158,6 +431,70 @@ hipi_gpio_get_eds( pin )
         RETVAL += XSRPI_INT_ARISE;
     }
   
+  OUTPUT: RETVAL
+
+
+void
+_hipi_i2c_setSlaveAddress( baseaddress, addr )
+    volatile uint32_t* baseaddress
+    uint8_t addr
+  CODE:
+	hipi_i2c_setSlaveAddress( baseaddress, addr );
+
+
+void
+_hipi_i2c_setClockDivider( baseaddress, divider )
+    volatile uint32_t* baseaddress
+    uint16_t divider
+  CODE:
+    hipi_i2c_setClockDivider( baseaddress, divider );
+
+
+uint8_t
+_hipi_i2c_write( baseaddress, buf, len )
+    volatile uint32_t* baseaddress
+    const char* buf
+    uint32_t len
+  CODE:
+    RETVAL = hipi_i2c_write( baseaddress, buf, len );
+  OUTPUT: RETVAL
+
+
+uint8_t
+_hipi_i2c_read( baseaddress, buf, len )
+    volatile uint32_t* baseaddress
+    char* buf
+    uint32_t len
+  CODE:
+    RETVAL = hipi_i2c_read( baseaddress, buf, len );
+  OUTPUT: RETVAL
+
+uint8_t
+_hipi_i2c_read_register( baseaddress, regaddr, readbuf, len )
+    volatile uint32_t* baseaddress
+    char* regaddr
+    char* readbuf
+    uint32_t len
+  CODE:
+    uint8_t reason = hipi_i2c_write( baseaddress, regaddr, 1 );
+    if( reason )
+    {
+        RETVAL = reason;
+    }
+    else
+    {
+        RETVAL = hipi_i2c_read( baseaddress, readbuf, len );
+    }
+  OUTPUT: RETVAL
+
+uint8_t
+_hipi_i2c_read_register_rs( baseaddress, regaddr, readbuf, len )
+    volatile uint32_t* baseaddress
+    char* regaddr
+    char* readbuf
+    uint32_t len
+  CODE:
+    RETVAL = hipi_i2c_read_register_rs( baseaddress, regaddr, readbuf, len );
   OUTPUT: RETVAL
 
 #
@@ -373,51 +710,18 @@ uint8_t
 bcm2835_i2c_write(const char * buf,  short length(buf));
 
 uint8_t
-hipi_i2c_write( buf )
-    SV* buf
-  CODE:
-    uint8_t rcode = bcm2835_i2c_write( SvPVX(buf), (uint32_t)SvCUR(buf) );
-    if( rcode == BCM2835_I2C_REASON_OK )
-    {
-        RETVAL = 1;
-    }
-    else
-    {
-        RETVAL = 0;
-    }
-  OUTPUT: RETVAL
-
-
-uint8_t
-bcm2835_i2c_read( char* buf, uint32_t len)
-
-void
-hipi_i2c_read( len )
-    uint32_t len
-  PPCODE:
-    char* outputbuffer;
-    SV* output = sv_newmortal();
-    SvUPGRADE(output, SVt_PV);
-    outputbuffer = (char *)SvGROW(output, len + sizeof(char) );
-    uint8_t rcode = bcm2835_i2c_read( outputbuffer, len );
-    EXTEND(SP, 1);
-    if( rcode == BCM2835_I2C_REASON_OK )
-    {
-        /* fixup output */
-        SvCUR_set(output, len);
-        *SvEND(output) = '\0';
-        (void) SvPOK_only(output);
-        
-        /* return SVs */
-        PUSHs(output);
-    }
-    else
-    {
-        PUSHs(&PL_sv_undef);
-    }
+bcm2835_i2c_read( char* buf, uint32_t len )
 
 uint64_t
 bcm2835_st_read()
 
 void
 bcm2835_st_delay(uint64_t offset_micros, uint64_t micros)
+
+void
+bcm2835_i2c_set_baudrate(uint32_t baudrate)
+
+uint8_t
+bcm2835_i2c_read_register_rs(char* regaddr, char* buf, uint32_t len)
+
+

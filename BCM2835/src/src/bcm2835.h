@@ -22,7 +22,7 @@
 /// BCM 2835).
 ///
 /// The version of the package that this documentation refers to can be downloaded 
-/// from http://www.open.com.au/mikem/bcm2835/bcm2835-1.21.tar.gz
+/// from http://www.open.com.au/mikem/bcm2835/bcm2835-1.22.tar.gz
 /// You can find the latest version at http://www.open.com.au/mikem/bcm2835
 ///
 /// Several example programs are provided.
@@ -219,6 +219,8 @@
 /// \version 1.20 Patch from Mark Dootson to close /dev/mem after access to the peripherals has been granted.
 /// \version 1.21 delayMicroseconds is now not susceptible to 32 bit timer overruns. 
 ///               Patch courtesy Jeremy Mortis.
+/// \version 1.22 Fixed incorrect definition of BCM2835_GPFEN0 which broke the ability to set 
+///               falling edge events. Reported by MArk Dootson.
 /// \author  Mike McCauley (mikem@airspayce.com)
 
 
@@ -1044,6 +1046,13 @@ extern "C" {
     /// see \ref bcm2835I2CClockDivider
     extern void bcm2835_i2c_setClockDivider(uint16_t divider);
 
+    /// Sets the I2C clock divider by converting the baudrate parameter to
+    /// the equivalent I2C clock divider. ( see \sa bcm2835_i2c_setClockDivider)
+    /// For the I2C standard 100khz you would set baudrate to 100000
+    /// The use of baudrate corresponds to its use in the I2C kernel device
+    /// driver. (Of course, bcm2835 has nothing to do with the kernel driver)
+    extern void bcm2835_i2c_set_baudrate(uint32_t baudrate);
+
     /// Transfers any number of bytes to the currently selected I2C slave.
     /// (as previously set by \sa bcm2835_i2c_setSlaveAddress)
     /// \param[in] buf Buffer of bytes to send.
@@ -1057,6 +1066,21 @@ extern "C" {
     /// \param[in] len Number of bytes in the buf buffer, and the number of bytes to received.
 	/// \return reason see \ref bcm2835I2CReasonCodes
     extern uint8_t bcm2835_i2c_read(char* buf, uint32_t len);
+
+    /// Allows reading from I2C slaves that require a repeated start (without any prior stop)
+    /// to read after the required slave register has been set. For example, the popular
+    /// MPL3115A2 pressure and temperature sensor. Note that your device must support or
+    /// require this mode. If your device does not require this mode then the standard
+    /// combined:
+    ///   \sa bcm2835_i2c_write
+    ///   \sa bcm2835_i2c_read
+    /// are a better choice.
+    /// Will read from the slave previously set by \sa bcm2835_i2c_setSlaveAddress
+    /// \param[in] regaddr Buffer containing the slave register you wish to read from.
+    /// \param[in] buf Buffer of bytes to receive.
+    /// \param[in] len Number of bytes in the buf buffer, and the number of bytes to received.
+	/// \return reason see \ref bcm2835I2CReasonCodes
+    extern uint8_t bcm2835_i2c_read_register_rs(char* regaddr, char* buf, uint32_t len);
 
     /// @}
 

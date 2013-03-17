@@ -231,3 +231,81 @@ i2c_smbus_write_i2c_block_data( file,  command, dataarray )
     free( buffer );
     
   OUTPUT: RETVAL
+  
+int
+_i2c_write( int file, __u16 address, unsigned char *wbuf,  __u16 wlen )
+  CODE:
+    int ret;
+    struct i2c_rdwr_ioctl_data i2c_data;
+    struct i2c_msg msg[1];
+    i2c_data.msgs = msg;
+    i2c_data.nmsgs = 1;             // use one message structure
+
+    i2c_data.msgs[0].addr = address;
+    i2c_data.msgs[0].flags = 0;     // don't need flags
+    i2c_data.msgs[0].len = wlen;
+    i2c_data.msgs[0].buf = (__u8 *)wbuf;
+
+    ret = ioctl(file, I2C_RDWR, &i2c_data);
+    
+    if (ret < 0) {
+        RETVAL = ret;
+    } else {
+        RETVAL = 0;
+    }
+  OUTPUT: RETVAL
+    
+
+int
+_i2c_read( int file, __u16 address, unsigned char *rbuf, __u16 rlen)
+  CODE:
+    int ret;
+    struct i2c_rdwr_ioctl_data  i2c_data;
+    struct i2c_msg  msg[1];
+   
+    i2c_data.msgs = msg;
+    i2c_data.nmsgs = 1;   
+    i2c_data.msgs[0].addr = address;
+    i2c_data.msgs[0].flags = I2C_M_RD; 
+    i2c_data.msgs[0].len = rlen;
+    i2c_data.msgs[0].buf = (__u8 *)rbuf;
+    
+    ret = ioctl(file, I2C_RDWR, &i2c_data);
+    
+    if (ret < 0) {
+        RETVAL = ret;
+    } else {
+        RETVAL = 0;
+    }
+
+    OUTPUT: RETVAL
+    
+int
+_i2c_read_register( int file, __u16 address, unsigned char *wbuf, unsigned char *rbuf, __u16 rlen)
+  CODE:
+    int ret;
+    struct i2c_rdwr_ioctl_data  i2c_data;
+    struct i2c_msg  msg[2];
+   
+    i2c_data.msgs = msg;
+    i2c_data.nmsgs = 2;
+    
+    i2c_data.msgs[0].addr = address;
+    i2c_data.msgs[0].flags = 0; 
+    i2c_data.msgs[0].len = 1;
+    i2c_data.msgs[0].buf = (__u8 *)wbuf;
+    
+    i2c_data.msgs[1].addr = address;
+    i2c_data.msgs[1].flags = I2C_M_RD; 
+    i2c_data.msgs[1].len = rlen;
+    i2c_data.msgs[1].buf = (__u8 *)rbuf;
+    
+    ret = ioctl(file, I2C_RDWR, &i2c_data);
+    
+    if (ret < 0) {
+        RETVAL = ret;
+    } else {
+        RETVAL = 0;
+    }
+
+    OUTPUT: RETVAL

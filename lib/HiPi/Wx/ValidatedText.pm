@@ -2,7 +2,7 @@
 # Package       HiPi::Wx::ValidatedText
 # Description:  Validated TextCtrl
 # Created       Mon Feb 25 13:27:30 2013
-# SVN Id        $Id: ValidatedText.pm 970 2013-03-05 23:10:20Z Mark Dootson $
+# SVN Id        $Id: ValidatedText.pm 1075 2013-03-12 02:53:45Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -18,6 +18,8 @@ use strict;
 use warnings;
 use Wx qw( :textctrl :misc :id );
 use base qw( Wx::TextCtrl HiPi::Class );
+
+our $VERSION = '0.22';
 
 sub new {
     my ($class, $parent, $label, $vdata, $vdatafield, $style ) = @_;

@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Panel::SPI
 # Description:  Base for Device panels
 # Created       Wed Feb 27 23:09:33 2013
-# SVN Id        $Id: SPI.pm 1042 2013-03-11 19:47:59Z Mark Dootson $
+# SVN Id        $Id: SPI.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -25,8 +25,9 @@ use HiPi::Wx::ValidatedText;
 use Try::Tiny;
 use HiPi::Utils;
 use HiPi::Apps::Control::GroupDialog;
-
 use Wx::Event qw( EVT_BUTTON EVT_TEXT EVT_CHECKBOX);
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw( list applybutton bufftext group ));
 

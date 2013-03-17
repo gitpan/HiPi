@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::GroupDialog
 # Description:  Manage Group
 # Created       Wed Mar 06 02:50:55 2013
-# SVN Id        $Id: GroupDialog.pm 987 2013-03-06 05:26:26Z Mark Dootson $
+# SVN Id        $Id: GroupDialog.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -23,6 +23,8 @@ use HiPi::Language;
 use HiPi::Utils qw( is_raspberry );
 use Wx::Event qw( EVT_LISTBOX EVT_LISTBOX_DCLICK EVT_BUTTON EVT_COMMAND );
 use Try::Tiny;
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw(memberlist userlist group gid btnadd btnremove));
 

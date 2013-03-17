@@ -9,14 +9,6 @@
 </OBJECT>
 <UL>
     <LI> <OBJECT TYPE="text/sitemap">
-             <PARAM NAME="Name" VALUE="Contents">
-             <PARAM NAME="Local" VALUE="contents.htm">
-         </OBJECT>
-    <LI> <OBJECT TYPE="text/sitemap">
-             <PARAM NAME="Name" VALUE="License">
-             <PARAM NAME="Local" VALUE="license.htm">
-         </OBJECT>
-    <LI> <OBJECT TYPE="text/sitemap">
              <PARAM NAME="Name" VALUE="HiPi Perl Modules">
              <PARAM NAME="Local" VALUE="contents.htm">
          </OBJECT>
@@ -27,6 +19,10 @@
     <LI> <OBJECT TYPE="text/sitemap">
              <PARAM NAME="Name" VALUE="Installation and Upgrade">
              <PARAM NAME="Local" VALUE="installation.htm">
+         </OBJECT>
+    <LI> <OBJECT TYPE="text/sitemap">
+             <PARAM NAME="Name" VALUE="Release Notes">
+             <PARAM NAME="Local" VALUE="release_notes.htm">
          </OBJECT>
     <LI> <OBJECT TYPE="text/sitemap">
              <PARAM NAME="Name" VALUE="License">
@@ -83,6 +79,10 @@
     <LI> <OBJECT TYPE="text/sitemap">
              <PARAM NAME="Name" VALUE="Wiring Pi Patch">
              <PARAM NAME="Local" VALUE="wiringpipatch.htm">
+         </OBJECT>
+    <LI> <OBJECT TYPE="text/sitemap">
+             <PARAM NAME="Name" VALUE="HiPi::BCM2835::I2C">
+             <PARAM NAME="Local" VALUE="mod_gpio_bcm2835_i2c.htm">
          </OBJECT>
     <LI> <OBJECT TYPE="text/sitemap">
              <PARAM NAME="Name" VALUE="Device Modules">
@@ -151,6 +151,10 @@
     <LI> <OBJECT TYPE="text/sitemap">
              <PARAM NAME="Name" VALUE="HiPi::Interface::SerLCD">
              <PARAM NAME="Local" VALUE="mod_interface_serlcd.htm">
+         </OBJECT>
+    <LI> <OBJECT TYPE="text/sitemap">
+             <PARAM NAME="Name" VALUE="HiPi::Interface::MPL3115A2">
+             <PARAM NAME="Local" VALUE="mod_interface_mpl3115a2.htm">
          </OBJECT>
     <LI> <OBJECT TYPE="text/sitemap">
              <PARAM NAME="Name" VALUE="HiPi::Pin">

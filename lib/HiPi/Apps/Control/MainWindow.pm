@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::MainWindow
 # Description:  Main Window for HiPi Apps Control
 # Created       Mon Feb 25 13:29:44 2013
-# SVN Id        $Id: MainWindow.pm 1016 2013-03-06 13:33:21Z Mark Dootson $
+# SVN Id        $Id: MainWindow.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -22,8 +22,9 @@ use Wx qw( wxTheApp :panel :sizer :id :misc :window );
 use HiPi::Apps::Control::SelectPanel;
 use HiPi::Apps::Control::MainPanel;
 use Try::Tiny;
-
 use Wx::Event qw( EVT_COMBOBOX EVT_BUTTON);
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw(datapanel) );
 

@@ -2,7 +2,7 @@
 # Package       HiPi::Wx::Validator::SetValue
 # Description:  Base Classes For Validators
 # Created       Mon Feb 25 13:27:30 2013
-# SVN Id        $Id: SetValue.pm 876 2013-02-26 07:18:11Z Mark Dootson $
+# SVN Id        $Id: SetValue.pm 1075 2013-03-12 02:53:45Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -16,6 +16,8 @@ package HiPi::Wx::Validator::SetValue;
 use strict;
 use warnings;
 use parent qw( HiPi::Wx::Validator );
+
+our $VERSION = '0.22';
 
 sub new {
     my $class = shift;

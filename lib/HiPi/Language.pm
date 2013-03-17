@@ -2,7 +2,7 @@
 # Package       HiPi::Language
 # Description:  Translations For Wx && none Wx
 # Created       Thu Dec 08 09:57:28 2011
-# svn id        $Id: Language.pm 844 2013-02-25 15:50:19Z Mark Dootson $
+# svn id        $Id: Language.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2011 Mark Dootson
 # Licence:      This program is free software; you can redistribute it 
 #               and/or modify it under the same terms as Perl itself
@@ -22,6 +22,8 @@ use warnings;
 require Exporter;
 use base qw( Exporter );
 use Carp;
+
+our $VERSION = '0.22';
 
 sub CONST_WXLANG { defined(&Wx::wxVERSION) };
 

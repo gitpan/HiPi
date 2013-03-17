@@ -2,7 +2,7 @@
 # Package       HiPi::Interface::HTADCI2C
 # Description:  Control HTADCI2C I2C Analog to Digital ic via I2C
 # Created       Sun Dec 02 01:42:27 2012
-# SVN Id        $Id: HTADCI2C.pm 1026 2013-03-11 08:55:02Z Mark Dootson $
+# SVN Id        $Id: HTADCI2C.pm 1403 2013-03-16 20:07:04Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -24,7 +24,7 @@ use Carp;
 
 our $VERSION = '0.20';
 
-__PACKAGE__->create_accessors( qw( devicename address res fil1 fil0) );
+__PACKAGE__->create_accessors( qw( devicename address res fil1 fil0 backend ) );
 
 
 sub new {
@@ -37,7 +37,7 @@ sub new {
         res         => 1,
         fil1        => 0,
         fil0        => 0,
-        baudrate    => 0,
+        backend     => 'smbus',
     );
     
     # get user params
@@ -46,9 +46,20 @@ sub new {
     }
     
     unless( defined($params{device}) ) {
-        require HiPi::Device::I2C;
-        my $dev = HiPi::Device::I2C->new(%params);
-        $params{device} = $dev;
+        if ( $params{backend} eq 'bcm2835' ) {
+            require HiPi::BCM2835::I2C;
+            $params{device} = HiPi::BCM2835::I2C->new(
+                address    => $params{address},
+                peripheral => ( $params{devicename} eq '/dev/i2c-0' ) ? HiPi::BCM2835::I2C::BB_I2C_PERI_0() : HiPi::BCM2835::I2C::BB_I2C_PERI_1(),
+            );
+        } else {
+            require HiPi::Device::I2C;
+            $params{device} = HiPi::Device::I2C->new(
+                devicename  => $params{devicename},
+                address     => $params{address},
+                busmode     => $params{backend},
+            );
+        }
     }
     
     my $self = $class->SUPER::new(%params);
@@ -57,7 +68,7 @@ sub new {
     my $setupflags = ( $params{res} ) ? 1 : 0;
     $setupflags += 2 if $params{fil0};
     $setupflags += 4 if $params{fil1};
-    $self->device->smbus_write( $setupflags );
+    $self->device->bus_write( $setupflags );
     
     return $self;
 }
@@ -70,7 +81,7 @@ sub set_option_flags {
     $self->res($res);
     $self->fil0($fil0);
     $self->fil1($fil1);
-    $self->device->smbus_write( $setupflags );
+    $self->device->bus_write( $setupflags );
 
 }
 
@@ -93,7 +104,7 @@ sub read_register {
     my($self) = @_;
     my $numbytes = ( $self->res ) ? 10 : 20;
     my $address  = ( $self->res ) ? 0x01 : 0x00;
-    my @rvals = $self->device->smbus_read( $address, $numbytes );
+    my @rvals = $self->device->bus_read( $address, $numbytes );
     if( $numbytes == 10 ) {
         for( my $i = 0; $i < 10; $i++ ) {
             $rvals[$i] *= 4;

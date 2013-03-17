@@ -2,7 +2,7 @@
 # Package       HiPi::Pin
 # Description:  GPIO / Extender Pin
 # Created       Wed Feb 20 04:39:18 2013
-# SVN Id        $Id: Pin.pm 1026 2013-03-11 08:55:02Z Mark Dootson $
+# SVN Id        $Id: Pin.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -18,6 +18,8 @@ use strict;
 use warnings;
 use HiPi::Class;
 use base qw( HiPi::Class );
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_ro_accessors( qw( pinid ) );
 

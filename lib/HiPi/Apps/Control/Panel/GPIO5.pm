@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Panel::GPIO5
 # Description:  Base for GPIO Pad panels
 # Created       Wed Feb 27 23:09:33 2013
-# SVN Id        $Id: GPIO5.pm 929 2013-02-28 00:07:38Z Mark Dootson $
+# SVN Id        $Id: GPIO5.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -19,6 +19,8 @@ use warnings;
 use parent qw( HiPi::Apps::Control::Panel::Pad );
 use Wx;
 use HiPi::Apps::Control::Data::GPIOPAD5;
+
+our $VERSION = '0.22';
 
 sub new {
     my ($class, $parent) = @_;

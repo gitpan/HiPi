@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Data::DeviceI2C
 # Description:  Manage Device I2C
 # Created       Fri Mar 01 15:53:01 2013
-# SVN Id        $Id: DeviceI2C.pm 1045 2013-03-11 20:00:04Z Mark Dootson $
+# SVN Id        $Id: DeviceI2C.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -24,6 +24,8 @@ use HiPi::Constant qw( :raspberry );
 use HiPi::Device::I2C;
 use HiPi;
 use Carp;
+
+our $VERSION = '0.22';
 
 sub new {
     my ($class, $readonly) = @_;

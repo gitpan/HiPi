@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Menu::File
 # Description:  File Menu
 # Created       Fri Mar 30 14:15:46 2012
-# SVN Id        $Id: File.pm 880 2013-02-27 03:27:04Z Mark Dootson $
+# SVN Id        $Id: File.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This program is free software; you can redistribute it 
 #               and/or modify it under the same terms as Perl itself
@@ -17,6 +17,8 @@ use warnings;
 use Wx qw( wxTheApp :id :bitmap );
 use parent qw( HiPi::Wx::Menu );
 use HiPi::Language;
+
+our $VERSION = '0.22';
 
 sub new {
     my $class = shift;

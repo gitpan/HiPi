@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Data::DeviceGPIO
 # Description:  Manage Device GPIO
 # Created       Fri Mar 01 15:53:01 2013
-# SVN Id        $Id: DeviceGPIO.pm 1002 2013-03-06 07:55:52Z Mark Dootson $
+# SVN Id        $Id: DeviceGPIO.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -23,6 +23,8 @@ use HiPi::Device::GPIO;
 use HiPi::Utils qw( is_raspberry );
 use HiPi::Constant qw( :raspberry );
 use Carp;
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw( pincount ) );
 

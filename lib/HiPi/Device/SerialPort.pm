@@ -2,7 +2,7 @@
 # Package       HiPi::Device::SerialPort
 # Description:  Serial Port driver
 # Created       Sat Nov 24 19:29:33 2012
-# SVN Id        $Id: SerialPort.pm 1026 2013-03-11 08:55:02Z Mark Dootson $
+# SVN Id        $Id: SerialPort.pm 1075 2013-03-12 02:53:45Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -21,7 +21,7 @@ use Carp;
 use Try::Tiny;
 require Device::SerialPort;
 
-our $VERSION = '0.01';
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw( portopen baudrate parity stopbits databits serialdriver ) );
 

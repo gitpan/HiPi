@@ -2,7 +2,7 @@
 # Package       HiPi::Interface::MCP23017
 # Description:  Control MCP23017 Port Extender via I2C
 # Created       Sun Dec 02 01:42:27 2012
-# SVN Id        $Id: MCP23017.pm 1026 2013-03-11 08:55:02Z Mark Dootson $
+# SVN Id        $Id: MCP23017.pm 1436 2013-03-17 03:04:15Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,9 +20,9 @@ use parent qw( HiPi::Interface );
 use HiPi::Constant qw( :raspberry );
 use Carp;
 
-our $VERSION = '0.20';
+__PACKAGE__->create_accessors( qw( address devicename backend ) );
 
-__PACKAGE__->create_accessors( qw( address devicename ) );
+our $VERSION = '0.20';
 
 our @EXPORT = ();
 our @EXPORT_OK = ();
@@ -141,7 +141,7 @@ sub new {
         devicename  => ( RPI_BOARD_REVISION == 1 ) ? '/dev/i2c-0' : '/dev/i2c-1',
         address     => 0x20,
         device      => undef,
-        baudrate    => 0,
+        backend     => 'smbus',
     );
     
     # get user params
@@ -150,14 +150,28 @@ sub new {
     }
     
     unless( defined($params{device}) ) {
-        require HiPi::Device::I2C;
-        $params{device} = HiPi::Device::I2C->new(
-            address  => $params{address},
-            baudrate => $params{baudrate},
-        );
+        if ( $params{backend} eq 'bcm2835' ) {
+            require HiPi::BCM2835::I2C;
+            $params{device} = HiPi::BCM2835::I2C->new(
+                address    => $params{address},
+                peripheral => ( $params{devicename} eq '/dev/i2c-0' ) ? HiPi::BCM2835::I2C::BB_I2C_PERI_0() : HiPi::BCM2835::I2C::BB_I2C_PERI_1(),
+            );
+        } else {
+            require HiPi::Device::I2C;
+            $params{device} = HiPi::Device::I2C->new(
+                devicename  => $params{devicename},
+                address     => $params{address},
+                busmode     => $params{backend},
+            );
+        }
     }
     
     my $self = $class->SUPER::new(%params);
+    
+    # get current register address config so correct settings are loaded
+    
+    $self->read_register_bytes('IOCON');
+    
     return $self;
 }
 
@@ -180,26 +194,23 @@ sub read_register_bytes {
     my($self, $register, $numbytes) = @_;
     croak(qq(Register $register is not recognised)) unless( exists($regaddress{$register}) );
     my $raddr = $regaddress{$register};
-    $numbytes ||= 1;
-    my @rvals = ( $self->device->smbus_read($raddr, $numbytes) );
+    
+    my @vals = $self->device->bus_read($raddr, $numbytes);
     # Check if address bank changed
     if( $register eq 'IOCON' ) {
-        my $bank = ( $rvals[0] & 0b10000000 ) ? 1 : 0;
+        my $bank = ( $vals[0] & 0b10000000 ) ? 1 : 0;
         $self->set_register_addresses($bank);
     }
-    return @rvals;
+    return @vals;
 }
 
 sub write_register_bits {
     my($self, $register, @bits) = @_;
-    
     my $bitcount  = @bits;
     my $bytecount = $bitcount / 8;
-    
     if( $bitcount % 8 ) {
         croak(qq(The number of bits $bitcount cannot be ordered into bytes));
     }
-    
     my @bytes;
     while( $bytecount ) {
         my $byte = 0;
@@ -209,24 +220,20 @@ sub write_register_bits {
         push(@bytes, $byte);
         $bytecount --;
     }
-    
     $self->write_register_bytes($register,@bytes);
 }
 
-sub write_register_bytes {
+sub write_register_bytes { 
     my($self, $register, @bytes) = @_;
-    
     croak(qq(Register $register is not recognised)) unless( exists($regaddress{$register}) );
     my $raddr = $regaddress{$register};
-    
-    my $result = $self->device->smbus_write($raddr, @bytes);
-    
+    my $rval = $self->device->bus_write($raddr, @bytes);
     # Check if address bank changed
     if( $register eq 'IOCON' ) {
         my $bank = ( $bytes[0] & 0b10000000 ) ? 1 : 0;
         $self->set_register_addresses($bank);
     }
-    return $result;
+    return $rval;
 }
 
 1;

@@ -2,7 +2,7 @@
 # Package       HiPi::Wx::Validator
 # Description:  Base Classes For Validators
 # Created       Mon Feb 25 13:27:30 2013
-# SVN Id        $Id: Validator.pm 933 2013-02-28 14:57:43Z Mark Dootson $
+# SVN Id        $Id: Validator.pm 1075 2013-03-12 02:53:45Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,6 +20,8 @@ use Wx;
 use HiPi::Class;
 use base qw( Wx::PlValidator HiPi::Class);
 use Storable;
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw( vdata vdatafield ) );
 

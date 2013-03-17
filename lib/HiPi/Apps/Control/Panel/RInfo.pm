@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Panel::RInfo
 # Description:  General Info Panel
 # Created       Wed Feb 27 23:09:33 2013
-# SVN Id        $Id: RInfo.pm 1018 2013-03-06 13:38:44Z Mark Dootson $
+# SVN Id        $Id: RInfo.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -22,6 +22,8 @@ use HiPi::Apps::Control::Data::RInfo;
 use HiPi::Language;
 use Try::Tiny;
 use HiPi::Utils;
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw( list ));
 

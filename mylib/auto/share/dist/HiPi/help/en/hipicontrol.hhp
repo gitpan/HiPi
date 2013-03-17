@@ -16,6 +16,7 @@ Help=,"hipicontrol.hhc","hipicontrol.hhk","contents.htm",,,,,,0x2420,,0x380e,,,,
 contents.htm
 overview.htm
 installation.htm
+release_notes.htm
 license.htm
 control-app.htm
 control_app_info.htm
@@ -30,6 +31,7 @@ mod_gpio_bcm2835.htm
 hipi-bcm2835-pin.htm
 mod_gpio_wiring.htm
 wiringpipatch.htm
+mod_gpio_bcm2835_i2c.htm
 mod_device.htm
 mod_device_gpio.htm
 hipi-device-gpio-pin.htm
@@ -47,6 +49,7 @@ mod_interface_mcp3008.htm
 mod_interface_mcp23017.htm
 mod_interface_mcp49xx.htm
 mod_interface_serlcd.htm
+mod_interface_mpl3115a2.htm
 hipi-pin.htm
 mod_util.htm
 mod_util_raspberrypi.htm

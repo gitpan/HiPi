@@ -2,7 +2,7 @@
 # Package       HiPi
 # Description:  High level Perl modules for Raspberry Pi
 # Created       Fri Nov 23 11:33:11 2012
-# SVN Id        $Id: HiPi.pm 1069 2013-03-12 01:40:32Z Mark Dootson $
+# SVN Id        $Id: HiPi.pm 1075 2013-03-12 02:53:45Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,7 +20,7 @@ use Carp;
 use XSLoader;
 use HiPi::Utils qw( is_raspberry );
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
 XSLoader::load('HiPi', $VERSION) if is_raspberry;
 

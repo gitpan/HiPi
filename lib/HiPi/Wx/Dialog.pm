@@ -2,7 +2,7 @@
 # Package       HiPi::Wx::Dialog
 # Description:  Base Class For Wx Dialogs
 # Created       Mon Feb 25 13:27:30 2013
-# SVN Id        $Id: Dialog.pm 980 2013-03-06 04:42:04Z Mark Dootson $
+# SVN Id        $Id: Dialog.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -19,6 +19,8 @@ use warnings;
 use Wx qw( wxTheApp :id :window :misc :frame :dialog :bitmap);
 use Wx::Event qw( EVT_CLOSE EVT_MENU EVT_UPDATE_UI );
 use base qw( Wx::Dialog HiPi::Class HiPi::Wx::Common );
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw( savelayout nostatusbar ));
 

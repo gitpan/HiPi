@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Panel::Pad
 # Description:  Base for GPIO Pad panels
 # Created       Wed Feb 27 23:09:33 2013
-# SVN Id        $Id: Pad.pm 1074 2013-03-12 02:19:57Z Mark Dootson $
+# SVN Id        $Id: Pad.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,6 +20,8 @@ use Wx qw( :panel :id :sizer :misc :window :textctrl :font );
 use parent qw( HiPi::Apps::Control::Panel::Base );
 use Wx::Event qw( EVT_PAINT EVT_COMMAND );
 use HiPi::Apps::Control::Data::PadPin;
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw( pad detail vdata2) );
 

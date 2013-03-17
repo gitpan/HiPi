@@ -2,7 +2,7 @@
 # Package       HiPi::Device::GPIO::Pin
 # Description:  Pin
 # Created       Wed Feb 20 04:37:38 2013
-# SVN Id        $Id: Pin.pm 1006 2013-03-06 08:21:26Z Mark Dootson $
+# SVN Id        $Id: Pin.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -21,6 +21,8 @@ use Carp;
 use Fcntl;
 use HiPi::Constant qw( :raspberry );
 use HiPi;
+
+our $VERSION = '0.22';
 
 __PACKAGE__->create_accessors( qw( valfh pinroot dirfh ) );
 

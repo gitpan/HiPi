@@ -69,6 +69,7 @@ lib/HiPi/Apps/Control/Panel/SPI.pm
 lib/HiPi/Apps/Control/Panel/W1.pm
 lib/HiPi/Apps/Control/SelectPanel.pm
 lib/HiPi/BCM2835.pm
+lib/HiPi/BCM2835/I2C.pm
 lib/HiPi/BCM2835/Pin.pm
 lib/HiPi/Class.pm
 lib/HiPi/Constant.pm
@@ -91,6 +92,7 @@ lib/HiPi/Interface/MCP23017.pm
 lib/HiPi/Interface/MCP3004.pm
 lib/HiPi/Interface/MCP3008.pm
 lib/HiPi/Interface/MCP49XX.pm
+lib/HiPi/Interface/MPL3115A2.pm
 lib/HiPi/Interface/SerLCD.pm
 lib/HiPi/Language.pm
 lib/HiPi/Pin.pm
@@ -148,6 +150,7 @@ mylib/auto/share/dist/HiPi/help/en/mod_device_serialport.htm
 mylib/auto/share/dist/HiPi/help/en/mod_device_spi.htm
 mylib/auto/share/dist/HiPi/help/en/mod_gpio.htm
 mylib/auto/share/dist/HiPi/help/en/mod_gpio_bcm2835.htm
+mylib/auto/share/dist/HiPi/help/en/mod_gpio_bcm2835_i2c.htm
 mylib/auto/share/dist/HiPi/help/en/mod_gpio_wiring.htm
 mylib/auto/share/dist/HiPi/help/en/mod_interface.htm
 mylib/auto/share/dist/HiPi/help/en/mod_interface_ds18x20.htm
@@ -158,6 +161,7 @@ mylib/auto/share/dist/HiPi/help/en/mod_interface_mcp23017.htm
 mylib/auto/share/dist/HiPi/help/en/mod_interface_mcp3004.htm
 mylib/auto/share/dist/HiPi/help/en/mod_interface_mcp3008.htm
 mylib/auto/share/dist/HiPi/help/en/mod_interface_mcp49xx.htm
+mylib/auto/share/dist/HiPi/help/en/mod_interface_mpl3115a2.htm
 mylib/auto/share/dist/HiPi/help/en/mod_interface_serlcd.htm
 mylib/auto/share/dist/HiPi/help/en/mod_util.htm
 mylib/auto/share/dist/HiPi/help/en/mod_util_class.htm
@@ -168,6 +172,7 @@ mylib/auto/share/dist/HiPi/help/en/mod_util_utils.htm
 mylib/auto/share/dist/HiPi/help/en/nanoblacklist.png
 mylib/auto/share/dist/HiPi/help/en/nanomodules.png
 mylib/auto/share/dist/HiPi/help/en/overview.htm
+mylib/auto/share/dist/HiPi/help/en/release_notes.htm
 mylib/auto/share/dist/HiPi/help/en/topic.htm
 mylib/auto/share/dist/HiPi/help/en/topic_gpiodev.htm
 mylib/auto/share/dist/HiPi/help/en/topic_gpiopins.htm
@@ -212,6 +217,7 @@ t/045-dev_gpio.t
 t/045-devgpio.t
 t/050-wiring.t
 t/055-bcm2835.t
+t/060-i2c-all.t
 typemap
 userbin/hipi-control-gui
 userbin/hipi-expin

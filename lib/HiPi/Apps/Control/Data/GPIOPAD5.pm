@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Data::GPIOPAD5
 # Description:  Data From GPIO PAD1
 # Created       Tue Feb 26 04:46:27 2013
-# SVN Id        $Id: GPIOPAD5.pm 933 2013-02-28 14:57:43Z Mark Dootson $
+# SVN Id        $Id: GPIOPAD5.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -21,6 +21,8 @@ use parent qw( HiPi::Apps::Control::Data::Pad );
 use HiPi::Constant qw( :raspberry );
 use Wx qw( wxTheApp );
 use HiPi::Apps::Control::Constant qw( :padpin );
+
+our $VERSION = '0.22';
 
 our @pinmap = (
     DNC_PIN_3V3,     DNC_PIN_5V0,     RPI_PAD5_PIN_3,  RPI_PAD5_PIN_4,  RPI_PAD5_PIN_5,

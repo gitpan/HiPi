@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::Data::Utils
 # Description:  
 # Created       Thu Feb 28 09:19:58 2013
-# SVN Id        $Id: Utils.pm 932 2013-02-28 12:48:17Z Mark Dootson $
+# SVN Id        $Id: Utils.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -19,6 +19,8 @@ use warnings;
 use Wx qw( wxTheApp );
 use HiPi::Apps::Control::Constant qw( :padpin );
 use HiPi::Constant qw( :raspberry );
+
+our $VERSION = '0.22';
 
 sub get_pin_data {
     my ($rpipin, $gpiopin) = @_;

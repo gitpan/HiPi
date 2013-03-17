@@ -2,7 +2,7 @@
 # Package       HiPi::Wx::App
 # Description:  Base Class For Wx Apps
 # Created       Mon Feb 25 13:27:30 2013
-# SVN Id        $Id: App.pm 1072 2013-03-12 01:54:40Z Mark Dootson $
+# SVN Id        $Id: App.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -18,6 +18,8 @@ use strict;
 use warnings;
 use Carp;
 use HiPi::Utils;
+
+our $VERSION = '0.22';
 
 use Wx qw( wxOK wxCENTRE wxCONFIG_USE_LOCAL_FILE wxID_OK
             wxUPDATE_UI_PROCESS_SPECIFIED :locale wxYES_NO

@@ -2,7 +2,7 @@
 # Package       HiPi::Interface::HTBackpackV2
 # Description:  HobbyTronics BackpackV2 LCD Controller
 # Created       Sat Nov 24 20:46:14 2012
-# SVN Id        $Id: HTBackpackV2.pm 1026 2013-03-11 08:55:02Z Mark Dootson $
+# SVN Id        $Id: HTBackpackV2.pm 1445 2013-03-17 03:59:03Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -24,7 +24,7 @@ use HiPi::Constant qw( :raspberry );
 
 our $VERSION = '0.20';
 
-__PACKAGE__->create_accessors( qw( devicetype i2c_address) );
+__PACKAGE__->create_accessors( qw( devicetype address devicename backend ) );
 
 our @EXPORT_OK = ();
 our %EXPORT_TAGS = ( all => \@EXPORT_OK );
@@ -91,6 +91,11 @@ use constant {
 sub new {
     my( $class, %userparams)  = @_;
     
+	# handle deprecated devicetype param
+	if ( defined($userparams{devicetype}) && !defined($userparams{backend}) ) {
+		$userparams{backend} = $userparams{devicetype};
+	}
+	
     my %params = (
         # LCD
         width            =>  undef,
@@ -100,52 +105,65 @@ sub new {
         positionmap      =>  undef,
         
         # RX or i2c
-        devicetype        => 'serialrx', # alt [serialrx|i2c]
+        backend          => 'serialrx', # alt [serialrx|i2c|smbus|bcm2835]
+		address          => undef,
+		devicename       => undef,
 	
         # SerialRX params
-        serial_baudrate   => 9600,
+        baudrate   		  => 9600,
         parity            => 'none',
         stopbits          => 1,
         databits          => 8,
-	
-	baudrate          => undef,
+		serial_devicename => '/dev/ttyAMA0',
         
         # i2c params
         i2c_address       => 0x3A,
-	i2c_baudrate      => 32000,
-	i2c_devicename    => ( RPI_BOARD_REVISION == 1 ) ? '/dev/i2c-0' : '/dev/i2c-1',
-        
+	    i2c_devicename    => ( RPI_BOARD_REVISION == 1 ) ? '/dev/i2c-0' : '/dev/i2c-1',
     );
     
     # get user params
     foreach my $key( keys (%userparams) ) {
         $params{$key} = $userparams{$key};
     }
-    
+	
+	# handle deprecated devicetype
+	$userparams{devicetype} = $userparams{backend};
+	
     unless( defined($params{device}) ) {
-        if( $params{devicetype} eq 'serialrx' ) {
-	    $params{baudrate} = $params{serial_baudrate} if !defined($params{baudrate});
+        if( lc($params{backend}) eq 'serialrx' ) {
+			$params{devicename} = $params{serial_devicename} unless $params{devicename};
             # set a default port
-            my %portparams;
+            my %devparams;
             for (qw( devicename baudrate parity stopbits databits ) ) {
-                $portparams{$_} = $params{$_};
+                $devparams{$_} = $params{$_};
             }
             require HiPi::Device::SerialPort;
             
-            $params{device} = HiPi::Device::SerialPort->new(%portparams);
+            $params{device} = HiPi::Device::SerialPort->new(%devparams);
             
-        } elsif( $params{devicetype} eq 'i2c' ) {
+        } elsif( $params{backend} =~ /^(i2c|smbus)$/i ) {
             
             $params{devicename} = $params{i2c_devicename} unless $params{devicename};
-            $params{baudrate} = $params{i2c_baudrate} if !defined($params{baudrate});
-	    $params{address} = $params{i2c_address} if !defined($params{address});
+	        $params{address}    = $params{i2c_address} unless defined($params{address});
 	    
             require HiPi::Device::I2C;
 	    
             $params{device} = HiPi::Device::I2C->new(
                 devicename   => $params{devicename},
                 address      => $params{address},
-		baudrate     => $params{baudrate}
+				busmode      => $params{backend},
+            );
+		
+		} elsif( lc($params{backend}) eq 'bcm2835' ) {
+            
+            $params{devicename} = $params{i2c_devicename} unless $params{devicename};
+	        $params{address}    = $params{i2c_address} unless defined($params{address});
+	    
+            require HiPi::BCM2835::I2C;
+	    
+            $params{device} = HiPi::BCM2835::I2C->new(
+                peripheral   => ( $params{devicename} eq '/dev/i2c-0' ) ? HiPi::BCM2835::I2C::BB_I2C_PERI_0() : HiPi::BCM2835::I2C::BB_I2C_PERI_1(),
+                address      => $params{address},
             );
         }
     }
@@ -166,7 +184,7 @@ sub send_command {
 
 sub send_htv2_command {
     my($self, $command, @params ) = @_;
-    if( $self->devicetype eq 'serialrx') {
+    if( $self->backend eq 'serialrx') {
         my $buffer  = chr($command);
         if( $command == HTV2_CMD_PRINT ) {
             # one param - a text string
@@ -190,7 +208,7 @@ sub send_htv2_command {
             # all other cases - params are ASCII char codes
             push(@i2cvals, @params) if @params;
         }
-        return $self->device->smbus_write( @i2cvals );
+        return $self->device->bus_write( @i2cvals );
     }
 }
 
@@ -217,7 +235,7 @@ sub backlight {
 
 sub update_baudrate {
     my $self = shift;
-    return unless $self->devicetype eq 'serialrx';
+    return unless $self->backend eq 'serialrx';
     my $baud = $self->device->baudrate;
     my $bflag;
     given( $baud ) {
@@ -261,7 +279,7 @@ sub update_geometry {
 
 sub change_i2c_address {
     my( $self, $newaddress) = @_;
-    if( $self->devicetype eq 'serialrx') {
+    if( $self->backend eq 'serialrx') {
         carp('The HTBackpackV2 device is in Serial RX mode. You cannot change the i2c address.');
         return;
     }

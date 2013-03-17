@@ -2,7 +2,7 @@
 # Package       HiPi::BCM2835::Pin
 # Description:  Pin
 # Created       Wed Feb 20 04:37:38 2013
-# SVN Id        $Id: Pin.pm 734 2013-02-22 09:35:17Z Mark Dootson $
+# SVN Id        $Id: Pin.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,6 +20,8 @@ use warnings;
 use parent qw( HiPi::Pin );
 use Carp;
 use HiPi::Constant qw( :raspberry );
+
+our $VERSION = '0.22';
 
 sub _open {
     my ($class, %params) = @_;

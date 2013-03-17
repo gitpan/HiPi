@@ -2,7 +2,7 @@
 # Package       HiPi::Wx::Menu
 # Description:  Menu Base Helper
 # Created       Fri Mar 30 03:09:33 2012
-# SVN Id        $Id: Menu.pm 857 2013-02-25 17:31:29Z Mark Dootson $
+# SVN Id        $Id: Menu.pm 1075 2013-03-12 02:53:45Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This program is free software; you can redistribute it 
 #               and/or modify it under the same terms as Perl itself
@@ -18,6 +18,8 @@ use Wx qw( :id wxTheApp wxACCEL_ALT wxACCEL_CTRL wxACCEL_NORMAL wxACCEL_SHIFT);
 use Wx::Event qw( EVT_UPDATE_UI EVT_MENU );
 use parent qw( HiPi::Class );
 use Carp;
+
+our $VERSION = '0.22';
 
 our @accessors = qw( parentid accelerators );
 
