@@ -2,7 +2,7 @@
 # Package       HiPi::BCM2835
 # Description:  Wrapper for bcm2835 C library - Access to /dev/mem
 # Created       Fri Nov 23 13:55:49 2012
-# SVN Id        $Id: BCM2835.pm 1285 2013-03-15 01:44:24Z Mark Dootson $
+# SVN Id        $Id: BCM2835.pm 1528 2013-03-18 06:06:42Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -24,7 +24,7 @@ use HiPi;
 use HiPi::Utils qw( is_raspberry );
 use HiPi::Constant qw( :raspberry :spi :i2c);
 
-our $VERSION = '0.22';
+our $VERSION = '0.23';
 
 if( is_raspberry ) {
     XSLoader::load('HiPi::BCM2835', $VERSION);

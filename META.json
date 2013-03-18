@@ -34,7 +34,7 @@
    "provides" : {
       "HiPi" : {
          "file" : "lib/HiPi.pm",
-         "version" : "0.22"
+         "version" : "0.23"
       },
       "HiPi::Apps::Control" : {
          "file" : "lib/HiPi/Apps/Control.pm",
@@ -218,7 +218,7 @@
       },
       "HiPi::BCM2835" : {
          "file" : "lib/HiPi/BCM2835.pm",
-         "version" : "0.22"
+         "version" : "0.23"
       },
       "HiPi::BCM2835::I2C" : {
          "file" : "lib/HiPi/BCM2835/I2C.pm",
@@ -258,7 +258,7 @@
       },
       "HiPi::Device::I2C" : {
          "file" : "lib/HiPi/Device/I2C.pm",
-         "version" : "0.22"
+         "version" : "0.23"
       },
       "HiPi::Device::OneWire" : {
          "file" : "lib/HiPi/Device/OneWire.pm",
@@ -266,7 +266,7 @@
       },
       "HiPi::Device::SPI" : {
          "file" : "lib/HiPi/Device/SPI.pm",
-         "version" : "0.22"
+         "version" : "0.23"
       },
       "HiPi::Device::SerialPort" : {
          "file" : "lib/HiPi/Device/SerialPort.pm",
@@ -338,7 +338,7 @@
       },
       "HiPi::Wiring" : {
          "file" : "lib/HiPi/Wiring.pm",
-         "version" : "0.22"
+         "version" : "0.23"
       },
       "HiPi::Wx::App" : {
          "file" : "lib/HiPi/Wx/App.pm",
@@ -408,5 +408,5 @@
          "http://opensource.org/licenses/gpl-license.php"
       ]
    },
-   "version" : "0.22"
+   "version" : "0.23"
 }

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 // File          spi/SPI.xs
-// Description:  XS module for MyPi::Device::SPI
+// Description:  XS module for HiPi::Device::SPI
 // Created       Fri Nov 23 12:13:43 2012
 // SVN Id        $Id:$
 // Copyright:    Copyright (c) 2012 Mark Dootson

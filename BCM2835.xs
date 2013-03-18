@@ -38,7 +38,6 @@ uint8_t hipi_i2c_write( volatile uint32_t* baseaddress, const char * buf, uint32
 uint8_t hipi_i2c_read( volatile uint32_t* baseaddress, char* buf, uint32_t len );
 uint8_t hipi_i2c_read_register_rs( volatile uint32_t* baseaddress, char* regaddr, char* readbuf, uint32_t len );
 
-
 void hipi_i2c_setSlaveAddress(volatile uint32_t* baseaddress, uint8_t addr )
 {
    	volatile uint32_t* paddr = baseaddress + BCM2835_BSC_A/4;
@@ -72,8 +71,8 @@ uint8_t hipi_i2c_write( volatile uint32_t* baseaddress, const char* buf, uint32_
 	bcm2835_peri_write_nb(status, BCM2835_BSC_S_CLKT | BCM2835_BSC_S_ERR | BCM2835_BSC_S_DONE);
 	// Set Data Length
     bcm2835_peri_write_nb(dlen, len);
-    // pre populate FIFO with up to 10 bytes ( an arbitrary num less than 16 )
-    while( remaining && ( i < 10 ) )
+    // pre populate FIFO with max buffer
+    while( remaining && ( i < BCM2835_BSC_FIFO_SIZE ) )
     {
         bcm2835_peri_write_nb(fifo, buf[i]);
         i++;
@@ -83,26 +82,18 @@ uint8_t hipi_i2c_write( volatile uint32_t* baseaddress, const char* buf, uint32_
     // Enable device and start transfer
     bcm2835_peri_write_nb(control, BCM2835_BSC_C_I2CEN | BCM2835_BSC_C_ST);
     
-    // wait for transaction to start
-    while ( !( bcm2835_peri_read(status) & BCM2835_BSC_S_TA ) )
+    // Transfer is over when BCM2835_BSC_S_DONE
+    while(!(bcm2835_peri_read_nb(status) & BCM2835_BSC_S_DONE ))
     {
-        bcm2835_delayMicroseconds(10);
+        while ( remaining && (bcm2835_peri_read_nb(status) & BCM2835_BSC_S_TXD ))
+        {
+            // Write to FIFO, no barrier
+            bcm2835_peri_write_nb(fifo, buf[i]);
+            i++;
+            remaining--;
+        }
     }
     
-    // write remaining data
-    while (bcm2835_peri_read(status) & BCM2835_BSC_S_TA )
-    {
-    	while ((bcm2835_peri_read(status) & BCM2835_BSC_S_TXD) && remaining)
-    	{
-        	// Write to FIFO, no barrier
-        	bcm2835_peri_write_nb(fifo, buf[i]);
-        	i++;
-        	remaining--;
-    	}
-    	// wait
-    	bcm2835_delayMicroseconds(i2c_byte_wait_us);
-    }
-
     // Received a NACK
     if (bcm2835_peri_read(status) & BCM2835_BSC_S_ERR)
     {
@@ -151,29 +142,21 @@ uint8_t hipi_i2c_read( volatile uint32_t* baseaddress, char* buf, uint32_t len )
     // Start read
     bcm2835_peri_write_nb(control, BCM2835_BSC_C_I2CEN | BCM2835_BSC_C_ST | BCM2835_BSC_C_READ);
     
-    // poll for transfer has started
-    while ( !( bcm2835_peri_read(status) & BCM2835_BSC_S_TA ) )
+    // wait for transfer to complete
+    while (!(bcm2835_peri_read_nb(status) & BCM2835_BSC_S_DONE))
     {
-        bcm2835_delayMicroseconds(10);
-    }    
-    
-    // empty FIFO as it is populated
-    while (bcm2835_peri_read(status) & BCM2835_BSC_S_TA)
-    {
-    	while (bcm2835_peri_read(status) & BCM2835_BSC_S_RXD)
-    	{
-    		// Read from FIFO, no barrier
-    		buf[i] = bcm2835_peri_read_nb(fifo);
-        	i++;
-        	remaining--;
-    	}
-    	// When remaining data is to be received, then wait for a data in FIFO
-        
-    	bcm2835_delayMicroseconds(i2c_byte_wait_us);
+        // we must empty the FIFO as it is populated and not use any delay
+        while (bcm2835_peri_read_nb(status) & BCM2835_BSC_S_RXD)
+        {
+            // Read from FIFO, no barrier
+            buf[i] = bcm2835_peri_read_nb(fifo);
+            i++;
+            remaining--;
+        }
     }
     
     // transfer has finished - grab any remaining stuff in FIFO
-    while (remaining && (bcm2835_peri_read(status) & BCM2835_BSC_S_RXD))
+    while (remaining && (bcm2835_peri_read_nb(status) & BCM2835_BSC_S_RXD))
     {
         // Read from FIFO, no barrier
         buf[i] = bcm2835_peri_read_nb(fifo);
@@ -205,7 +188,7 @@ uint8_t hipi_i2c_read( volatile uint32_t* baseaddress, char* buf, uint32_t len )
 }
 
 
-uint8_t hipi_i2c_read_register_rs( volatile uint32_t* baseaddress, char* regaddr, char* readbuf, uint32_t len )
+uint8_t hipi_i2c_read_register_rs( volatile uint32_t* baseaddress, char* regaddr, char* buf, uint32_t len )
 {   
     volatile uint32_t* dlen    = baseaddress + BCM2835_BSC_DLEN/4;
     volatile uint32_t* fifo    = baseaddress + BCM2835_BSC_FIFO/4;
@@ -232,38 +215,38 @@ uint8_t hipi_i2c_read_register_rs( volatile uint32_t* baseaddress, char* regaddr
     bcm2835_peri_write_nb(control, BCM2835_BSC_C_I2CEN | BCM2835_BSC_C_ST);
     
     // poll for transfer has started
-    while ( !( bcm2835_peri_read(status) & BCM2835_BSC_S_TA ) )
+    while ( !( bcm2835_peri_read_nb(status) & BCM2835_BSC_S_TA ) )
     {
-        bcm2835_delayMicroseconds(10);
+        // Linux may cause us to miss entire transfer stage
+        if(bcm2835_peri_read(status) & BCM2835_BSC_S_DONE)
+            break;
     }
     
     // Send a start-read
     bcm2835_peri_write_nb(dlen, len);
     bcm2835_peri_write_nb(control, BCM2835_BSC_C_I2CEN | BCM2835_BSC_C_ST  | BCM2835_BSC_C_READ );
     
-    // wait for write and first byte back
-    
+    // Wait for write to complete and first byte back.
     bcm2835_delayMicroseconds(i2c_byte_wait_us * 3);
     
-    // empty FIFO as it is populated
-    while (bcm2835_peri_read(status) & BCM2835_BSC_S_TA)
+    // wait for transfer to complete
+    while (!(bcm2835_peri_read_nb(status) & BCM2835_BSC_S_DONE))
     {
-    	while (bcm2835_peri_read(status) & BCM2835_BSC_S_RXD)
-    	{
-    		// Read from FIFO, no barrier
-    		readbuf[i] = bcm2835_peri_read_nb(fifo);
-        	i++;
-        	remaining--;
-    	}
-    	// When remaining data is to be received, then wait for a data in FIFO
-    	bcm2835_delayMicroseconds(i2c_byte_wait_us);
+        // we must empty the FIFO as it is populated and not use any delay
+        while (remaining && bcm2835_peri_read_nb(status) & BCM2835_BSC_S_RXD)
+        {
+            // Read from FIFO, no barrier
+            buf[i] = bcm2835_peri_read_nb(fifo);
+            i++;
+            remaining--;
+        }
     }
     
     // transfer has finished - grab any remaining stuff in FIFO
-    while (remaining && (bcm2835_peri_read(status) & BCM2835_BSC_S_RXD))
+    while (remaining && (bcm2835_peri_read_nb(status) & BCM2835_BSC_S_RXD))
     {
         // Read from FIFO, no barrier
-        readbuf[i] = bcm2835_peri_read_nb(fifo);
+        buf[i] = bcm2835_peri_read_nb(fifo);
         i++;
         remaining--;
     }

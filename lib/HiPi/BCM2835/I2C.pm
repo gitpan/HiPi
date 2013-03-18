@@ -2,7 +2,7 @@
 # Package       HiPi::BCM2835::I2C
 # Description:  I2C Connection
 # Created       Wed Mar 13 13:40:32 2013
-# SVN Id        $Id: I2C.pm 1435 2013-03-17 01:59:15Z Mark Dootson $
+# SVN Id        $Id: I2C.pm 1522 2013-03-18 05:11:31Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -22,7 +22,7 @@ use HiPi::Constant qw( :raspberry :i2c );
 use Carp;
 
 __PACKAGE__->create_accessors( qw(
-    _hipi_baseaddr peripheral address
+    _hipi_baseaddr peripheral address _function_mode
 ));
 
 our $VERSION = '0.22';
@@ -67,12 +67,16 @@ sub set_baudrate {
     my ($class, $channel, $newval) = @_;
     # make sure library is initialised
     HiPi::BCM2835::bcm2835_init();
-    #HiPi::BCM2835::bcm2835_set_baudrate($newval);
-    #return;
+    
+    # set baudrate for both function sets
+    
+    HiPi::BCM2835::bcm2835_i2c_set_baudrate($newval);
+    
     my $baseaddress = ( $channel == BB_I2C_PERI_1 )
         ? BCM2835_BSC1_BASE
         : BCM2835_BSC0_BASE;
     my $cdiv = int( BCM2835_CORE_CLK_HZ / $newval ) & 0x3FFFFE;
+    
     HiPi::BCM2835::_hipi_i2c_setClockDivider( $baseaddress, $cdiv );
 }
 
@@ -88,7 +92,7 @@ sub get_baudrate {
     my $baseaddress = ( $channel == BB_I2C_PERI_1 )
         ? BCM2835_BSC1_BASE
         : BCM2835_BSC0_BASE;
-    
+
     my $readaddess = $baseaddress + BCM2835_BSC_DIV;
     my $cdiv = HiPi::BCM2835::bcm2835_peri_read($readaddess);
     # return value with least significant part munged
@@ -102,6 +106,7 @@ sub new {
     my %params = (
         address      => 0,
         peripheral   => ( RPI_BOARD_REVISION == 1 ) ? BB_I2C_PERI_0 : BB_I2C_PERI_1,
+        _function_mode => 'hipi',
     );
     
     # get user params
@@ -124,6 +129,10 @@ sub new {
     my $self = $class->SUPER::new(%params);
     
     $self->i2c_begin();
+    
+    if( $self->_function_mode eq 'corelib' ) {
+        carp qq(USING BCM2835 CORE FUNCTIONS);
+    }
     
     return $self;
 }
@@ -165,7 +174,10 @@ sub i2c_write {
     my( $self, @bytes ) = @_;
     my $writebuffer = pack('C*', @bytes);
     HiPi::BCM2835::_hipi_i2c_setSlaveAddress( $self->_hipi_baseaddr, $self->address );
-    my $error = HiPi::BCM2835::_hipi_i2c_write( $self->_hipi_baseaddr, $writebuffer, scalar @bytes );
+    my $error = ( $self->_function_mode eq 'corelib' )
+        ? HiPi::BCM2835::bcm2835_i2c_write( $writebuffer )
+        : HiPi::BCM2835::_hipi_i2c_write( $self->_hipi_baseaddr, $writebuffer, scalar @bytes );
+    
     croak qq(i2c_write failed with return value $error) if $error;
 }
 
@@ -174,7 +186,10 @@ sub i2c_read {
     $numbytes ||= 1;
     my $readbuffer = chr(0) x  ( $numbytes + 1 );
     HiPi::BCM2835::_hipi_i2c_setSlaveAddress( $self->_hipi_baseaddr, $self->address );
-    my $error = HiPi::BCM2835::_hipi_i2c_read($self->_hipi_baseaddr, $readbuffer, $numbytes);
+    my $error = ( $self->_function_mode eq 'corelib' )
+        ? HiPi::BCM2835::bcm2835_i2c_read( $readbuffer, $numbytes )
+        : HiPi::BCM2835::_hipi_i2c_read($self->_hipi_baseaddr, $readbuffer, $numbytes);
+
     croak qq(i2c_read failed with return value $error) if $error;
     my $template = ( $numbytes > 1 ) ? 'C' . $numbytes : 'C';
     my @values = unpack($template, $readbuffer);
@@ -188,7 +203,14 @@ sub i2c_read_register {
     my $writebuffer = pack('C', $register);
     my $readbuffer = '0' x $numbytes;
     HiPi::BCM2835::_hipi_i2c_setSlaveAddress( $self->_hipi_baseaddr, $self->address );
-    my $error = HiPi::BCM2835::_hipi_i2c_read_register($self->_hipi_baseaddr, $writebuffer, $readbuffer, $numbytes);
+    my $error;
+    if( $self->_function_mode eq 'corelib' ) {
+        $error = HiPi::BCM2835::bcm2835_i2c_write( $writebuffer );
+        croak qq(i2c_read_register failed with return value $error) if $error;
+        $error = HiPi::BCM2835::bcm2835_i2c_read( $readbuffer, $numbytes );
+    } else {
+        $error = HiPi::BCM2835::_hipi_i2c_read_register($self->_hipi_baseaddr, $writebuffer, $readbuffer, $numbytes);
+    }
     croak qq(i2c_read_register failed with return value $error) if $error;
     my $template  = ( $numbytes > 1 ) ? 'C' . $numbytes : 'C';
     my @values = unpack($template, $readbuffer);
@@ -202,7 +224,11 @@ sub i2c_read_register_rs {
     my $writebuffer = pack('C', $register);
     my $readbuffer = '0' x ( $numbytes + 1 );
     HiPi::BCM2835::_hipi_i2c_setSlaveAddress( $self->_hipi_baseaddr, $self->address );
-    my $error = HiPi::BCM2835::_hipi_i2c_read_register_rs( $self->_hipi_baseaddr, $writebuffer, $readbuffer, $numbytes );
+    
+    my $error = ( $self->_function_mode eq 'corelib' )
+        ? HiPi::BCM2835::bcm2835_i2c_read_register_rs( $writebuffer, $readbuffer, $numbytes )
+        : HiPi::BCM2835::_hipi_i2c_read_register_rs( $self->_hipi_baseaddr, $writebuffer, $readbuffer, $numbytes );
+
     croak qq(i2c_read_register_rs failed with error $error) if $error;
     my $template = ( $numbytes > 1 ) ? 'C' . $numbytes : 'C';
     my @values = unpack($template, $readbuffer);    

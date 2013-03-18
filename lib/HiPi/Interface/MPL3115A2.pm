@@ -2,7 +2,7 @@
 # Package       HiPi::Interface::MPL3115A2
 # Description:  Interface to MPL3115A2 precision Altimeter
 # Created       Wed Mar 13 08:56:53 2013
-# SVN Id        $Id: MPL3115A2.pm 1485 2013-03-17 09:49:20Z Mark Dootson $
+# SVN Id        $Id: MPL3115A2.pm 1517 2013-03-18 05:04:24Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -218,6 +218,19 @@ use constant {
 
 {
     my @const = qw(
+        MPL_REG_STATUS 
+        MPL_REG_OUT_P_MSB  
+        MPL_REG_OUT_P_CSB 
+        MPL_REG_OUT_P_LSB 
+        MPL_REG_OUT_T_MSB 
+        MPL_REG_OUT_T_LSB 
+        MPL_REG_DR_STATUS  
+        MPL_REG_OUT_P_DELTA_MSB 
+        MPL_REG_OUT_P_DELTA_CSB 
+        MPL_REG_OUT_P_DELTA_LSB 
+        MPL_REG_OUT_T_DELTA_MSB 
+        MPL_REG_OUT_T_DELTA_LSB 
+        MPL_REG_WHO_AM_I        
         MPL_REG_F_STATUS             
         MPL_REG_F_DATA               
         MPL_REG_F_SETUP              
@@ -346,7 +359,9 @@ sub new {
         peripheral  => ( RPI_BOARD_REVISION == 1 ) ? BB_I2C_PERI_0 : BB_I2C_PERI_1,
         address     => 0x60,
         device      => undef,
-        osdelay     => MPL_OSREAD_DELAY
+        osdelay     => MPL_OSREAD_DELAY,
+        
+        _function_mode => 'hipi',
     );
     
     # get user params
@@ -359,6 +374,7 @@ sub new {
         $params{device} = HiPi::BCM2835::I2C->new(
             peripheral  => $params{peripheral},
             address     => $params{address},
+            _function_mode  => $params{_function_mode},
         );
     }
     
