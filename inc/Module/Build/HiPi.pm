@@ -10,7 +10,7 @@ use Cwd;
 use File::Path;
 our @ISA = qw( Module::Build );
 
-our $VERSION = '0.23';
+our $VERSION ='0.25';
 
 sub process_xs_files {
 	my $self = shift;
@@ -44,6 +44,9 @@ sub ACTION_clean {
     chdir('Wiring/src/wiringPi');
     system('make clean');
     chdir('../../../');
+    chdir('suidbin');
+    system('make -f makefile.gcc realclean');
+    chdir('../../../');
     chdir
 }
 
@@ -58,6 +61,7 @@ sub ACTION_build {
     $self->hipi_build_bcm2835_library;
     $self->hipi_build_xs;
     $self->hipi_build_data;
+    $self->hipi_build_execs;
     $self->log_info(qq(Build Complete\n));
 }
 
@@ -72,6 +76,7 @@ sub ACTION_test {
 sub ACTION_install {
 	my $self = shift;
 	$self->depends_on('build');
+    $self->hipi_install_groups;
 	$self->SUPER::ACTION_install;
     $self->hipi_install_scriptfiles;
 }
@@ -151,9 +156,12 @@ sub hipi_do_depends {
         libio-multiplex-perl
         i2c-tools
         git
+        zlib1g-dev
+        libperl-dev
     );
-    my $cmd = qq(${supg}apt-get -y install ) . join(' ', @debs);
-    
+    my $cmd = qq(${supg}apt-get update);
+    system($cmd) and die qq(failed updating apt: $!);
+    $cmd = qq(${supg}apt-get -y install ) . join(' ', @debs);
     system($cmd) and die qq(failed installing dependencies: $!);
     system(qq(touch $statefile));
 }
@@ -261,10 +269,11 @@ sub hipi_build_bcm2835_library {
 sub hipi_build_xs {
     my $self = shift;
     
-    $self->log_info(qq(Building XS Code\n));
+    $self->log_info(qq(Building XS Files\n));
     
     my @modules = (
         { name => 'HiPi', version => $VERSION, autopath => 'HiPi', libs => '' },
+        { name => 'Exec', version => $VERSION, autopath => 'HiPi/Utils/Exec', libs => '-lz' },
         { name => 'I2C',  version => $VERSION, autopath => 'HiPi/Device/I2C', libs => '' },
         { name => 'SPI',  version => $VERSION, autopath => 'HiPi/Device/SPI', libs => '' },
         { name => 'BCM2835', version => $VERSION, autopath => 'HiPi/BCM2835', libs => '-Lmylib/lib -lbcm2835Static' },
@@ -340,9 +349,14 @@ sub hipi_build_xs {
         
         # Link Object
         unless( $self->up_to_date( $cfile, $dllfile ) ) {
+            
+            my $libdirs = $Config{libpth};
+            $libdirs =~ s/\s+/ -L/g;
+            
             unlink( $dllfile );
             my @cmd = (
                 $Config{ld},
+                qq(-L$libdirs),
                 $Config{lddlflags},
                 $ofile,
                 '-o ' . $dllfile,
@@ -351,6 +365,20 @@ sub hipi_build_xs {
             $self->hipi_run_command( \@cmd );
         }
     }
+}
+
+sub hipi_build_execs {
+    my $self = shift;
+    return if $self->up_to_date( [ 'Build', 'suidbin/hipi-i2c.pl' ], [ 'suidbin/hipi-i2c' ] );
+    $self->log_info(qq(Building Executables\n));
+    
+    my @cmd = (
+        $^X,
+        '-Ilib -Iblib/arch -Iblib/lib',
+        'inc/buildexecs.pl',
+    );
+    
+    $self->hipi_run_command( \@cmd );
 }
 
 sub hipi_build_data {
@@ -364,21 +392,22 @@ sub hipi_install_scriptfiles {
     
     my $supg = hipi_check_perms();
     
-    $self->log_info(qq(Installing hipi-gpio\n));
-    # install hipi-gpio as setuid
-    {
-        my $src = 'suidbin/hipi-gpio';
-        my $tgt = '/usr/local/bin/hipi-gpio';
+    # install setuid executables
+    for my $fname ( qw( hipi-i2c ) ) {
+        $self->log_info(qq(Installing $fname\n));
+        my $src = qq(suidbin/$fname);
+        my $tgt = qq(/usr/local/bin/$fname);
         my $command = qq(sudo cp \"$src\" \"$tgt\");
-        system($command) and die qq(Failed to install hipi-gpio script : $!);
-        $command = qq(sudo chown root:root \"$tgt\");
-        system($command) and die qq(Failed to set root ownership for hipi-gpio script : $!);
-        $command = qq(sudo chmod 2755 \"$tgt\");
-        system($command) and die qq(Failed to set suid mode for hipi-gpio script : $!);
+        
+        system($command) and die qq(Failed to install $fname script : $!);
+        $command = qq(sudo chown root:i2c \"$tgt\");
+        system($command) and die qq(Failed to set root ownership for $fname script : $!);
+        $command = qq(sudo chmod 4754 \"$tgt\");
+        system($command) and die qq(Failed to set suid mode for $fname script : $!);
     }
     
     # install plain executables
-    for my $fname ( qw( hipi-control-gui hipi-expin hipi-install hipi-upgrade) ) {
+    for my $fname ( qw( hipi-control-gui hipi-expin hipi-install hipi-upgrade hipi-gpio) ) {
         $self->log_info(qq(Installing $fname\n));
         my $src = qq(userbin/$fname);
         my $tgt = qq(/usr/local/bin/$fname);
@@ -388,6 +417,13 @@ sub hipi_install_scriptfiles {
         system($command) and die qq(Failed to set root ownership for $fname script : $!);
         $command = qq(sudo chmod 0755 \"$tgt\");
         system($command) and die qq(Failed to set permissions for $fname script : $!);
+    }
+}
+
+sub hipi_install_groups {
+    my $self = shift;
+    for my $group ( qw( i2c spi gpio ) ) {
+        system(qq(sudo groupadd -f -r $group));
     }
 }
 

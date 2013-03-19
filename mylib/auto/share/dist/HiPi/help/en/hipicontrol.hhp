@@ -26,6 +26,8 @@ control_app_gpio_device.htm
 control_app_i2cdev.htm
 control_app_spi.htm
 control_app_w1dev.htm
+command_line_utils.htm
+command_line_utils_i2c.htm
 mod_gpio.htm
 mod_gpio_bcm2835.htm
 hipi-bcm2835-pin.htm

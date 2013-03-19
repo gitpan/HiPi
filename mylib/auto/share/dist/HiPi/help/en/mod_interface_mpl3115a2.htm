@@ -35,10 +35,22 @@
 <p>HiPi::BCM2835::I2C supports the read method employing repeated starts that MPL31152 requires.</p>
 <p>Currently only one shot methods and some utilities are wrapped. It is recommeded that you implement your own module inheriting from HiPi::Interface::MPL3115A2 to suit your own requirement.</p>
 <h2>Exported Constants</h2>
-<pre>    use HiPi::BCM2835::I2C qw( :all );
+<pre>    use HiPi::Interface::MPL3115A2 qw( :all );
     
     <I>register addresses</I>
-
+	MPL_REG_STATUS 
+        MPL_REG_OUT_P_MSB  
+        MPL_REG_OUT_P_CSB 
+        MPL_REG_OUT_P_LSB 
+        MPL_REG_OUT_T_MSB 
+        MPL_REG_OUT_T_LSB 
+        MPL_REG_DR_STATUS  
+        MPL_REG_OUT_P_DELTA_MSB 
+        MPL_REG_OUT_P_DELTA_CSB 
+        MPL_REG_OUT_P_DELTA_LSB 
+        MPL_REG_OUT_T_DELTA_MSB 
+        MPL_REG_OUT_T_DELTA_LSB 
+        MPL_REG_WHO_AM_I        
         MPL_REG_F_STATUS             
         MPL_REG_F_DATA               
         MPL_REG_F_SETUP              
@@ -119,7 +131,7 @@
         
         MPL_CTRL_REG4_MASK           
         
-    <I>bitmasks for all interrrupt registers</I>
+    <I>bitmasks for all interrupt registers</I>
 
         MPL_INTREGS_DRDY   
         MPL_INTREGS_FIFO   
@@ -164,7 +176,7 @@
         
         MPL_PT_DATA_CFG_MASK
 
-    <I>standard recommended delay of 550 ms is one shot mode</I>
+    <I>standard recommended delay of 550 ms in one shot mode</I>
 
         MPL_OSREAD_DELAY    
 
@@ -193,7 +205,6 @@
 <h5>my $active = $sen->sysmod();</h5><pre>    Returns false in standy mode, true in active mode.</pre>
 <h5>my $id = $sen->who_am_i();</h5><pre>    Returns standard id MPL3115A2_ID.
     Often used as a method of confirming correct communication.</pre>
-
 <h5>my ( $alt, $pre, $tmp ) = $sen->os_all_data();</h5><pre>    One shot method returning an array containing converted values
     for altitude, pressure and temperature.</pre>
 <h5>my ( $altpre, $tmp ) = $sen->os_both_data($function);</h5><pre>    $function is one of MPL_FUNC_PRESSURE or MPL_FUNC_ALTITUDE

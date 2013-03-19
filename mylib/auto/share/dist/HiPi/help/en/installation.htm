@@ -30,9 +30,7 @@
 </TABLE>
 
 <H2>Installation and Upgrade</H2><p>HiPi is a Perl distribution that you install into the existing Perl on your Raspberry Pi. The build process includes installation of all dependencies.</p>
-<p>It is highly recommended that you update and upgrade your installation of Raspbian Wheezy before installing the HiPi modules.</p>
-<pre>sudo apt-get update
-sudo apt-get upgrade</pre>
+<p>The build process will run <code> sudo apt-get update</code> as part of the installation process. The install process builds the distribution from source and must install its dependencies ( using the normal sudo apt-get install ). The install stage will often fail due to stale package information if apt-get update has not been run previously.</p>
 <p>This release of HiPi is tested against the 2013-02-09-wheezy-raspbian release. If you have an earlier release installed and do not run update and upgrade, your mileage may vary.</p>
 <h3>Installation</h3>
 <p>The install process requires root privileges to install its scripts and does so by calling 'sudo'. You must run either the automated install script or the standard Perl build process as a user with sudo privileges. By default the 'pi' user has these privileges when running Raspbian Wheezy.</p>

@@ -2,7 +2,7 @@
 # Package       HiPi
 # Description:  High level Perl modules for Raspberry Pi
 # Created       Fri Nov 23 11:33:11 2012
-# SVN Id        $Id: HiPi.pm 1529 2013-03-18 06:11:13Z Mark Dootson $
+# SVN Id        $Id: HiPi.pm 1610 2013-03-19 13:41:19Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,7 +20,7 @@ use Carp;
 use XSLoader;
 use HiPi::Utils qw( is_raspberry );
 
-our $VERSION = '0.23';
+our $VERSION ='0.25';
 
 XSLoader::load('HiPi', $VERSION) if is_raspberry;
 
@@ -33,6 +33,8 @@ our %_cansudostash = (
     cansudo  => undef,
     usesudo  => 0,
 );
+
+our $_safepath = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
 
 sub use_sudo {
     if(@_) {
@@ -54,6 +56,7 @@ sub can_sudo {
     if( $_cansudostash{lasteuid} == 0 ) {
         $_cansudostash{cansudo} = 0;
     } else {
+        local $ENV{PATH} = $_safepath;
         $_cansudostash{cansudo} = ( system('sudo -V >/dev/null 2>&1') ) ? 0 : 1;
     }
     
@@ -63,6 +66,7 @@ sub can_sudo {
 sub system_sudo {
     my $command = shift;
     return 0 unless is_raspberry;
+    local $ENV{PATH} = $_safepath;
     if( $< && can_sudo() ) {
         $command = qq($sudoprog $command);
     }
@@ -72,6 +76,7 @@ sub system_sudo {
 sub qx_sudo {
     my $command = shift;
     return '' unless is_raspberry;
+    local $ENV{PATH} = $_safepath;
     if( $< && can_sudo() ) {
         $command = qq($sudoprog $command);
     }
@@ -81,6 +86,7 @@ sub qx_sudo {
 sub system_sudo_shell {
     my $command = shift;
     return 0 unless is_raspberry;
+    local $ENV{PATH} = $_safepath;
     if( $< && can_sudo() ) {
         $command = qq($sudoprog sh -c '$command');
     }
@@ -90,6 +96,7 @@ sub system_sudo_shell {
 sub qx_sudo_shell {
     my $command = shift;
     return '' unless is_raspberry;
+    local $ENV{PATH} = $_safepath;
     if( $< && can_sudo ) {
         $command = qq($sudoprog sh -c '$command');
     }
@@ -124,10 +131,6 @@ __END__
 =head1 NAME
 
 HiPi
-
-=head1 VERSION
-
-Version 0.21
 
 =head1 DESCRIPTION
 

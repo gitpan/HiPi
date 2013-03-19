@@ -1,8 +1,8 @@
 #!perl
 
-# SVN Id $Id: 060-i2c-all.t 1479 2013-03-17 05:37:16Z Mark Dootson $
+# SVN Id $Id: 060-i2c-all.t 1602 2013-03-19 11:46:37Z Mark Dootson $
 
-use Test::More tests => 27;
+use Test::More tests => 270;
 
 use HiPi::BCM2835;
 use HiPi::BCM2835::I2C qw( :all );
@@ -12,7 +12,7 @@ use HiPi::Interface::MPL3115A2;
 use HiPi::Interface::HTADCI2C;
 
 sub reset_mcp23017 {
-    my $mcp = HiPi::Interface::MCP23017->new( backend => 'bcm2835' );
+    my $mcp = HiPi::Interface::MCP23017->new( backend => 'smbus' );
     # all pins as outputs set low
     # configuration IOCON.BANK=0
     my @bits = $mcp->read_register_bits('IOCON');
@@ -24,20 +24,19 @@ sub reset_mcp23017 {
     $mcp->write_register_bits('IODIRB', @lowbits);
     $mcp->write_register_bits('GPIOA',  @lowbits);
     $mcp->write_register_bits('GPIOB',  @lowbits);
-    
 }
 
 SKIP: {
-      skip 'unknown peripheral setup', 27 unless $ENV{HIPI_MODULES_PERI_TEST};
+      skip 'unknown peripheral setup', 270 unless $ENV{HIPI_MODULES_PERI_TEST};
 
 
 
-for my $baudrate ( 32000 ) {
+for my $baudrate ( 100, 250, 500, 9600, 16000, 32000, 100000, 400000, 1000000, 1100000 ) {
     HiPi::BCM2835::I2C->set_baudrate( BB_I2C_PERI_1, $baudrate );
     HiPi::Device::I2C->set_baudrate(  $baudrate );
     
 # test MCP23017 in all modes
-for my $backend( qw( bcm2835 i2c  smbus  ) )
+for my $backend( qw(  smbus bcm2835 i2c ) )
 {
     
     
@@ -87,6 +86,8 @@ for my $backend( qw( bcm2835 i2c  smbus  ) )
 # return to base state
 reset_mcp23017();
 
+HiPi::BCM2835::I2C->set_baudrate( BB_I2C_PERI_1, 32000 );
+HiPi::Device::I2C->set_baudrate(  32000 );
 
 }; # end SKIP
 

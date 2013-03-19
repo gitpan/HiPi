@@ -56,10 +56,16 @@
     BB_I2C_PERI_0 is broken out on these pins.
 
     Common values for baudrate are:
-       32000      allow clock stretching device to work
-      100000      I2C standard
-      400000      I2C fast standard
-     1600000      close to maximum supported on BCM2835</pre>
+    
+     100000  - the i2c standard
+     400000  - fast i2c standard
+    1000000  - seems to be the fastest reliable speed that this
+	       implementation supports. Of course, all the 
+	       devices on your bus must support this too.
+      32000  - the Broadcom I2C peripherals don't support
+	       clock stretching so if you have a device that
+	       employs this, a baudrate of 32000 ( or perhaps
+	       even lower ) will often allow the device to work.</pre>
 <h2>Exported Constants</h2>
 <pre>    use HiPi::BCM2835 qw( :i2c );
 

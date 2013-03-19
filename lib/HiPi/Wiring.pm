@@ -2,7 +2,7 @@
 # Package       HiPi::Wiring
 # Description:  Wrapper for wiringPi C library
 # Created       Fri Nov 23 13:55:49 2012
-# SVN Id        $Id: Wiring.pm 1528 2013-03-18 06:06:42Z Mark Dootson $
+# SVN Id        $Id: Wiring.pm 1604 2013-03-19 12:07:11Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -21,7 +21,7 @@ use base qw( Exporter );
 use XSLoader;
 use HiPi::Utils qw( is_raspberry );
 
-our $VERSION = '0.23';
+our $VERSION ='0.25';
 
 XSLoader::load('HiPi::Wiring', $VERSION) if is_raspberry;
 

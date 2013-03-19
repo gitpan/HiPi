@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control
 # Description:  Control RPi Basics
 # Created       Mon Feb 25 13:27:30 2013
-# SVN Id        $Id: Control.pm 1480 2013-03-17 05:42:51Z Mark Dootson $
+# SVN Id        $Id: Control.pm 1552 2013-03-18 13:39:02Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,6 +20,7 @@ use parent qw( HiPi::Wx::App );
 use HiPi::Apps::Control::MainWindow;
 use Wx qw( :id :bitmap );
 use HiPi::BCM2835;
+use HiPi;
 
 our $VERSION = '0.22';
 
@@ -42,7 +43,7 @@ sub OnSetApplicationDetail {
     
     $self->copyright('Copyright (c)2013 Mark Dootson');
     $self->description('GUI control for Raspberry Pi GPIO pads and devices');
-    $self->version( $VERSION );
+    $self->version( $HiPi::VERSION );
     $self->supporturl( 'http://raspberrypi.citrusperl.com' );
     
     $self->singleinstance( 1 );

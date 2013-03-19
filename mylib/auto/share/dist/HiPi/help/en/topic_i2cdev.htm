@@ -33,6 +33,7 @@
 <H2>I2C Device Driver</H2><p>The I2C kernel device drivers provide access to the BCM2835 I2C interface.<p>
 <p>In common with many other device drivers it makes 'files' available in the /dev/ folder of your system that you can write to and read from using <B>ioctl</B> commands.</p>
 <p>The module <A HREF="mod_device_i2c.htm">HiPi::Device::I2C</A> supports communication with i2c devices using the kernel device driver.</p> 
+<p>Note that you may also communicate with i2c devices using the userspace bcm2835 library wrapped in <A HREF="mod_gpio_bcm2835_i2c.htm">HiPi::BCM2835::I2C</A>
 <p>You can have the device drivers loaded at system startup as described in the <A HREF="">Loading Device Drivers Topic.</A></p>
 <p>You can also load the device drivers dynamically with:</p>
 <pre>

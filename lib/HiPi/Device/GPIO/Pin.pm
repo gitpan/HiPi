@@ -2,7 +2,7 @@
 # Package       HiPi::Device::GPIO::Pin
 # Description:  Pin
 # Created       Wed Feb 20 04:37:38 2013
-# SVN Id        $Id: Pin.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
+# SVN Id        $Id: Pin.pm 1589 2013-03-19 07:33:09Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -88,7 +88,7 @@ sub _reset_value_handle {
 sub _do_getinterrupt {
     my $self = shift;
     my $edgepath = $self->pinroot . '/edge';
-    my $result = HiPi::qx_sudo(qq(cat $edgepath));
+    my $result = HiPi::qx_sudo(qq(/bin/cat $edgepath));
     if( $? ) {
         croak qq(failed reading $edgepath : $!);
     }
@@ -123,7 +123,7 @@ sub _do_setinterrupt {
     }
     
     my $edgepath = $self->pinroot . '/edge';
-    HiPi::system_sudo_shell(qq(echo $stredge > $edgepath)) and croak qq( failed to write to $edgepath : $!);
+    HiPi::system_sudo_shell(qq(/bin/echo $stredge > $edgepath)) and croak qq( failed to write to $edgepath : $!);
 }
 
 
@@ -133,10 +133,10 @@ sub active_low {
     my $filepath = $self->pinroot . '/active_low';
     
     if(defined($newval)) {
-        HiPi::system_sudo_shell(qq(echo $newval > $filepath)) and croak qq( failed to write to $filepath : $!);
+        HiPi::system_sudo_shell(qq(/bin/echo $newval > $filepath)) and croak qq( failed to write to $filepath : $!);
     }
     
-    my $value = HiPi::qx_sudo(qq(cat $filepath));
+    my $value = HiPi::qx_sudo(qq(/bin/cat $filepath));
     if($?) {
         croak qq(failed to read $filepath : $!);
     }

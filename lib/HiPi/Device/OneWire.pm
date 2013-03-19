@@ -2,7 +2,7 @@
 # Package       HiPi::Device::OneWire
 # Description:  One Wire Device
 # Created       Sun Feb 10 02:31:12 2013
-# SVN Id        $Id: OneWire.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
+# SVN Id        $Id: OneWire.pm 1589 2013-03-19 07:33:09Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -83,7 +83,7 @@ sub get_module_info {
 sub list_slaves {
     my( $class ) = @_;
     my @rlist = ();
-    my $slist = HiPi::qx_sudo_shell('cat /sys/bus/w1/devices/w1_bus_master1/w1_master_slaves 2>&1');
+    my $slist = HiPi::qx_sudo_shell('/bin/cat /sys/bus/w1/devices/w1_bus_master1/w1_master_slaves 2>&1');
     if( $? ) {
         return @rlist;
     }
@@ -104,14 +104,14 @@ sub list_slaves {
 sub read_data {
     my( $class, $id ) = @_;
     # return data & or errors
-    my $data = HiPi::qx_sudo_shell(qq(cat /sys/bus/w1/devices/$id/w1_slave 2>&1));
+    my $data = HiPi::qx_sudo_shell(qq(/bin/cat /sys/bus/w1/devices/$id/w1_slave 2>&1));
     chomp($data);
     return $data;
 }
 
 sub id_exists {
     my( $class, $id) = @_;
-    my $slist = HiPi::qx_sudo_shell('cat /sys/bus/w1/devices/w1_bus_master1/w1_master_slaves 2>&1');
+    my $slist = HiPi::qx_sudo_shell('/bin/cat /sys/bus/w1/devices/w1_bus_master1/w1_master_slaves 2>&1');
     return ( $slist =~ /\Q$id\E/ && -e qq(/sys/bus/w1/devices/$id/w1_slave) ) ? 1 : 0;
 }
 

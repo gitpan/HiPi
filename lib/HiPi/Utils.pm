@@ -2,7 +2,7 @@
 # Package       HiPi::Utils
 # Description:  HiPi Utilities
 # Created       Sun Feb 24 05:16:17 2013
-# SVN Id        $Id: Utils.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
+# SVN Id        $Id: Utils.pm 1596 2013-03-19 09:09:04Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -53,7 +53,9 @@ our ($_israspberry, $_isunix, $_iswindows, $_ismac, $_homedir) = (0,0,0,0, '');
         $_ismac = 1;
     } else {
         $_isunix = 1;
-        my $checkcmd = qx(cat /proc/cpuinfo);
+        # clean our path for safety
+        local $ENV{PATH} = '/bin:/usr/bin:/usr/local/bin';
+        my $checkcmd = qx(/bin/cat /proc/cpuinfo);
         $_israspberry = ( $checkcmd =~ /BCM2708/ ) ? 1 : 0;
     }
     
@@ -129,12 +131,7 @@ sub cat_file {
     my $filepath = shift;
     require HiPi;
     return '' unless is_raspberry;
-    my $rval;
-    if( -r $filepath ) {
-        $rval = qx(cat $filepath);
-    } else {
-        $rval = HiPi::qx_sudo(qq(cat $filepath));
-    }
+    my $rval = HiPi::qx_sudo(qq(/bin/cat $filepath));
     if($?) {
         croak qq(reading file $filepath failed : $!);
     }
@@ -162,13 +159,16 @@ sub echo_file {
         $canwrite = ( -w $dir ) ? 1 : 0;
     }
     
-    my $command = qq(echo \"$msg\" $append $filepath);
- 
-    if( $canwrite ) {
-        system($command) and croak qq(Failed to echo to $filepath : $!);
-    } else {
-        HiPi::system_sudo_shell( $command ) and croak qq(Failed to echo to $filepath : $!);
+    my $command = qq(/bin/echo \"$msg\" $append $filepath);
+    {
+        local $ENV{PATH} = '/bin:/usr/bin:/usr/local/bin';
+        if( $canwrite ) {
+            system($command) and croak qq(Failed to echo to $filepath : $!);
+        } else {
+            HiPi::system_sudo_shell( $command ) and croak qq(Failed to echo to $filepath : $!);
+        }
     }
+    
 }
 
 sub parse_udev_rule {

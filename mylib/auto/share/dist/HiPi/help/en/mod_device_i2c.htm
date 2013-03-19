@@ -70,7 +70,19 @@
     unload and load the kernel module to do this.
 
     Of course, the user the script is running as must have
-    root permissions to load and unload kernel modules.</pre>
+    root permissions to load and unload kernel modules.
+    
+    Common values for baudrate are:
+    
+     100000  - the i2c standard
+     400000  - fast i2c standard
+    1000000  - seems to be the fastest reliable speed that this
+	       implementation supports. Of course, all the 
+	       devices on your bus must support this too.
+      32000  - the Broadcom I2C peripherals don't support
+	       clock stretching so if you have a device that
+	       employs this, a baudrate of 32000 ( or perhaps
+	       even lower ) will often allow the device to work.</pre>
 <h5>HiPi::Device::I2C->get_device_list();</h5>
 <pre>    Returns an array containing the names of available
     devices. 

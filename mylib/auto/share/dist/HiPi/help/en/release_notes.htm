@@ -30,8 +30,18 @@
 </TABLE>
 
 <H2>Release Notes</H2><pre>
+Version 0.24  - 19 March 2013
+              - Added hipi-i2c command line utility to allow none Perl code
+                access to i2c commands.
+              - All calls to external programs ( cat, echo etc. ) are now
+                taint safe.
+              - Installation now always does an apt-get update before 
+                apt-get install (depedency list). My test builds
+                often fail at dependency installation time if apt-get update
+                is not executed. 
+                
 Version 0.23  - 18 March 2013
-              - bug in i2c C code
+              - bug in i2c C code fixed.
               
 Version 0.22  - 17 March 2013
               - Added i2c interface to HiPi::Device::I2C (in addition to SMBus)
@@ -46,9 +56,7 @@ Version 0.21  - 12 March 2013
               - PWM Pin setting fixed in Control App
               
 Version 0.20  - 11 March 2013
-              - Refactored HiPi module tree
-
-</pre></FONT>
+              - Refactored HiPi module tree</pre></FONT>
 <br>
 <p>
 <br>

@@ -3,7 +3,7 @@
 #########################################################################################
 # Description:  Perform GPIO export & interrupt setting for HiPi::Wiring
 # Created       Sat Feb 23 20:29:22 2013
-# svn id        $Id:$
+# svn id        $Id: hipi-gpio.pl 1559 2013-03-19 05:06:43Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -16,6 +16,8 @@ use strict;
 use warnings;
 use HiPi::Wiring;
 use Fcntl;
+
+our $VERSION ='0.25';
 
 my($action, $wiringpinno, $intmode ) = @ARGV;
 
@@ -61,11 +63,5 @@ unless( -d $pindir && -f $dirfile && -f $edgfile && -f $valfile) {
 sysopen($edgfh, $dirfile, O_WRONLY ) or die qq(failed to open sysfs edge file for pin $gpiopin : $!);
 syswrite($edgfh, $confirmedmode);
 close($edgfh);
-
-#-----------------------------------------------------
-# check permissions files need to be rw for gpio group
-#-----------------------------------------------------
-
-for my $filepath ( $dirfile.  )
 
 1;

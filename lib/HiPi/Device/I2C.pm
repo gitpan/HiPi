@@ -2,7 +2,7 @@
 # Package       HiPi::Device::I2C
 # Description:  Wrapper for I2C communucation
 # Created       Fri Nov 23 13:55:49 2012
-# SVN Id        $Id: I2C.pm 1528 2013-03-18 06:06:42Z Mark Dootson $
+# SVN Id        $Id: I2C.pm 1604 2013-03-19 12:07:11Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -26,7 +26,7 @@ use Time::HiRes qw( usleep );
 use HiPi::Constant qw( :raspberry );
 use HiPi::Utils qw( is_raspberry );
 
-our $VERSION = '0.23';
+our $VERSION ='0.25';
 
 __PACKAGE__->create_accessors( qw ( fh fno address i2cbuffer busmode ) );
 
@@ -104,7 +104,7 @@ sub get_module_info {
 
 sub get_baudrate {
     my $class = shift;
-    my $baudrate = HiPi::qx_sudo_shell('cat /sys/module/i2c_bcm2708/parameters/baudrate 2>&1');
+    my $baudrate = HiPi::qx_sudo_shell('/bin/cat /sys/module/i2c_bcm2708/parameters/baudrate 2>&1');
     if($?) {
         return $_moduleinfo[0]->{params}->{baudrate};
     }

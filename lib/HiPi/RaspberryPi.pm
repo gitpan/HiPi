@@ -2,7 +2,7 @@
 # Package       HiPi::RaspberryPi
 # Description:  Data from, inter alia, /proc/cpuinfo
 # Created       Sat Nov 24 00:30:35 2012
-# SVN Id        $Id: RaspberryPi.pm 1026 2013-03-11 08:55:02Z Mark Dootson $
+# SVN Id        $Id: RaspberryPi.pm 1592 2013-03-19 07:48:10Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -48,7 +48,8 @@ our %_cpuinfostash: shared;
     
     if( is_raspberry ){
         # Only do this on real raspi
-        my $output = qx(cat /proc/cpuinfo);
+        local $ENV{PATH} = '/bin:/usr/bin:/usr/local/bin';
+        my $output = qx(/bin/cat /proc/cpuinfo);
         if( $output ) {
             for ( split(/\n/, $output) ) {
                 if( $_ =~ /^([^\s]+)\s*:\s(.+)$/ ) {

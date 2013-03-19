@@ -1,9 +1,7 @@
-#!/usr/bin/perl
-
 #########################################################################################
-# Description:  HiPi GUI Control
-# Created       Mon Feb 25 13:38:42 2013
-# svn id        $Id:$
+# Description:  Build Exec Scripts
+# Created       Sat Feb 23 17:21:10 2013
+# svn id        $Id: buildexecs.pl 1601 2013-03-19 11:39:40Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -13,19 +11,20 @@
 
 use strict;
 use warnings;
+use HiPi::Utils::Exec;
 
-our $VERSION ='0.25';
-
-if($<) {
-    my $msg = qq(\nThis script requires administrator permissions to run. );
-    $msg .= qq(You must be in a graphical environment. Run the script using:);
-    $msg .= qq(\n\n\tgksudo hipi-control-gui\n\n);
-    print $msg;
-    exit(0);
+for my $file ( qw( suidbin/hipi-i2c ) ) {
+    my @paths = split(/\//, $file);
+    my $execname  = pop @paths;
+    my $directory = join('/', @paths);
+    
+    my $builder = HiPi::Utils::Exec->new(
+        workingdir => $directory,
+        sourceperl => qq($file.pl),
+        outputexec => $execname,
+    );
+    
+    $builder->build;
 }
-
-require HiPi::Apps::Control;
-my $app = HiPi::Apps::Control->new;
-$app->MainLoop;
 
 1;
