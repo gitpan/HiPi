@@ -3,7 +3,7 @@
 #########################################################################################
 # Description:  Direct access to I2C functions via /dev/mem
 # Created       Mon Mar 18 22:38:41 2013
-# svn id        $Id: hipi-i2c.pl 1604 2013-03-19 12:07:11Z Mark Dootson $
+# svn id        $Id: hipi-i2c.pl 1672 2013-03-23 06:34:04Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -18,7 +18,7 @@ use HiPi::BCM2835::I2C qw( :all );
 use Try::Tiny;
 use Carp;
 
-our $VERSION ='0.25';
+our $VERSION ='0.26';
 
 my @args = @ARGV;
 
@@ -73,8 +73,8 @@ sub do_baud {
         
         # I can't get baudrate above 1100000 working with my
         # i2c devices, but around 1600000 should be supported
-        if( ($newrate < 500) || ($newrate > 1600000) ) {
-            croak('baudrate must be in the range 500 - 1600000');
+        if( ($newrate < 3816) || ($newrate > 1600000) ) {
+            croak('baudrate must be in the range 3816 - 1600000');
         }
         
         my $changerate = $newrate & 0x1FFFFF;

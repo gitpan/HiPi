@@ -14,9 +14,11 @@
 use strict;
 use warnings;
 
-our $VERSION ='0.25';
+our $VERSION ='0.26';
 
-if($<) {
+use HiPi::Utils qw( is_raspberry );
+
+if( is_raspberry && $<) {
     my $msg = qq(\nThis script requires administrator permissions to run. );
     $msg .= qq(You must be in a graphical environment. Run the script using:);
     $msg .= qq(\n\n\tgksudo hipi-control-gui\n\n);

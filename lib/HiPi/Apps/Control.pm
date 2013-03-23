@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control
 # Description:  Control RPi Basics
 # Created       Mon Feb 25 13:27:30 2013
-# SVN Id        $Id: Control.pm 1552 2013-03-18 13:39:02Z Mark Dootson $
+# SVN Id        $Id: Control.pm 1689 2013-03-23 13:56:47Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -22,7 +22,7 @@ use Wx qw( :id :bitmap );
 use HiPi::BCM2835;
 use HiPi;
 
-our $VERSION = '0.22';
+our $VERSION = '0.26';
 
 __PACKAGE__->create_accessors( qw( devmem ) );
 
@@ -51,7 +51,7 @@ sub OnSetApplicationDetail {
 
 sub MainLoop {
     my ( $self ) = @_;
-    
+       
     #---------------------
     # Help File
     #---------------------

@@ -1,5 +1,4 @@
 
-<!-- #define _BUILD_HIPI_WEBDOC -->
 
 <HTML>
 <head>
@@ -74,6 +73,7 @@
     
     Common values for baudrate are:
     
+       3816  - the minimum supported
      100000  - the i2c standard
      400000  - fast i2c standard
     1000000  - seems to be the fastest reliable speed that this
@@ -133,6 +133,19 @@
     
     @params is a list of bytes to write to the currently
     addressed device.</pre>
+<h5>$dev->bus_write_error( @params );</h5>
+<pre>    The module provides the method bus_write_error as 
+    a generic call to the current backend.
+    
+    @params is a list of bytes to write to the currently
+    addressed device. 
+
+    The bus_write_error method is error tolerant and is 
+    generally used when an external device has a soft reset 
+    or reboot call that exits the i2c conversation when 'reset' 
+    is set. The standard i2c_write command will return an 
+    error in this case as the slave did not acknowledge the 
+    reset byte.</pre>
 <h5>$dev->bus_read( $cmdval, $numbytes );</h5>
 <pre>    The module provides the method bus_read as 
     a generic call to the current backend.
@@ -194,6 +207,16 @@
     be a register address on the slave.
     
     Use of the busmode wrapper methods is recommended.</pre>
+<h5>$dev->i2c_write_error( @params );</h5>
+<pre>    @params is a list of bytes to write to the slave device.
+    Normally, the first (and perhaps only) item in the list will 
+    be a register address on the slave.
+
+    The i2c_write_error method is error tolerant and is generally 
+    used when an external device has a soft reset or reboot call 
+    that exits the i2c conversation when 'reset' is set.
+    The standard i2c_write command will return an error in this case
+    as the slave did not acknowledge the reset byte.</pre>
 <h5>$dev->i2c_read( $numbytes );</h5>
 <pre>    Reads a number of bytes $numbytes read from the current
     register address in the slave (normally set using a previous
@@ -231,6 +254,12 @@
     
     my $command = shift @params;
     $dev->smbus_write_i2c_block_data($command, @bytes );</pre>
+<h5>$dev->smbus_write_error( @params );</h5>
+<pre>    The smbus_write_error method is an error tolerant version of
+    smbus_write. It can be used when an external device has a soft 
+    reset or reboot call that exits the i2c conversation when 'reset' 
+    is set. The standard smbus_write command will return an error in 
+    this case as the slave did not acknowledge the reset byte.</pre>
 <h5>$dev->smbus_read( $cmdval, $numbytes );</h5>
 <pre>    The module provides the method smbus_read as 
     a generic call to the main smbus methods. I have

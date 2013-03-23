@@ -2,7 +2,7 @@
 # Package       HiPi
 # Description:  High level Perl modules for Raspberry Pi
 # Created       Fri Nov 23 11:33:11 2012
-# SVN Id        $Id: HiPi.pm 1610 2013-03-19 13:41:19Z Mark Dootson $
+# SVN Id        $Id: HiPi.pm 1704 2013-03-23 21:08:56Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,11 +20,7 @@ use Carp;
 use XSLoader;
 use HiPi::Utils qw( is_raspberry );
 
-our $VERSION ='0.25';
-
-XSLoader::load('HiPi', $VERSION) if is_raspberry;
-
-our $defaultuser = 'pi';
+our $VERSION ='0.26';
 
 our $sudoprog = 'sudo';
 
@@ -105,23 +101,7 @@ sub qx_sudo_shell {
 
 sub drop_permissions_name {
     my($username, $groupname) = @_;
-    
-    return 0 unless is_raspberry;
-    
-    $username ||= getlogin();
-    $username ||= $defaultuser;
-    
-    my($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) = getpwnam($username);
-    my $targetuid = $uid;
-    my $targetgid = ( $groupname ) ? (getgrnam($groupname))[2] : $gid;
-    if( $targetuid > 0 && $targetgid > 0 ) {
-        drop_permissions_id($targetuid, $targetgid);
-    } else {
-        croak qq(Could not drop permissions to uid $targetuid, gid $targetgid);
-    }
-    unless( $> == $targetuid && $< == $targetuid && $) == $targetgid && $( == $targetgid) {
-        croak qq(Could not set Perl permissions to uid $targetuid, gid $targetgid);
-    }
+    HiPi::Utils::drop_permissions_name( $username, $groupname );
 }
 
 1;

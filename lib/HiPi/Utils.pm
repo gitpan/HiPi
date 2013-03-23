@@ -2,7 +2,7 @@
 # Package       HiPi::Utils
 # Description:  HiPi Utilities
 # Created       Sun Feb 24 05:16:17 2013
-# SVN Id        $Id: Utils.pm 1596 2013-03-19 09:09:04Z Mark Dootson $
+# SVN Id        $Id: Utils.pm 1704 2013-03-23 21:08:56Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,7 +20,11 @@ use Carp;
 require Exporter;
 use base qw( Exporter );
 
-our $VERSION = '0.20';
+our $VERSION ='0.26';
+
+XSLoader::load('HiPi::Utils', $VERSION) if is_raspberry();
+
+our $defaultuser = 'pi';
 
 our @EXPORT_OK = qw(
     get_groups
@@ -344,10 +348,26 @@ sub set_modprobe_conf {
 
 }
 
+
 sub drop_permissions_name {
     my($username, $groupname) = @_;
-    require HiPi;
-    HiPi::drop_permissions_name( $username, $groupname );
+    
+    return 0 unless is_raspberry;
+    
+    $username ||= getlogin();
+    $username ||= $defaultuser;
+    
+    my($name, $passwd, $uid, $gid, $quota, $comment, $gcos, $dir, $shell) = getpwnam($username);
+    my $targetuid = $uid;
+    my $targetgid = ( $groupname ) ? (getgrnam($groupname))[2] : $gid;
+    if( $targetuid > 0 && $targetgid > 0 ) {
+        drop_permissions_id($targetuid, $targetgid);
+    } else {
+        croak qq(Could not drop permissions to uid $targetuid, gid $targetgid);
+    }
+    unless( $> == $targetuid && $< == $targetuid && $) == $targetgid && $( == $targetgid) {
+        croak qq(Could not set Perl permissions to uid $targetuid, gid $targetgid);
+    }
 }
 
 1;

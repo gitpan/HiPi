@@ -14,7 +14,7 @@ use 5.14.0;
 use strict;
 use warnings;
 
-our $VERSION ='0.25';
+our $VERSION ='0.26';
 
 my( $group, $pinpath ) = @ARGV;
 

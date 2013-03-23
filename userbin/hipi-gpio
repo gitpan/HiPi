@@ -17,7 +17,7 @@ use warnings;
 use HiPi::Wiring;
 use Fcntl;
 
-our $VERSION ='0.25';
+our $VERSION ='0.26';
 
 my($action, $wiringpinno, $intmode ) = @ARGV;
 

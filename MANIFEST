@@ -34,7 +34,6 @@ Build.PL
 Changes
 COPYING
 Exec.xs
-HiPi.xs
 I2C.xs
 inc/buildexecs.pl
 inc/installwx.pl
@@ -223,12 +222,14 @@ t/045-devgpio.t
 t/050-wiring.t
 t/055-bcm2835.t
 t/060-i2c-all.t
+t/061-mpl3115a2.t
 typemap
 userbin/hipi-control-gui
 userbin/hipi-expin
 userbin/hipi-gpio
 userbin/hipi-install
 userbin/hipi-upgrade
+Utils.xs
 Wiring.xs
 Wiring/src/wiringPi/COPYING.LESSER
 Wiring/src/wiringPi/gertboard.c

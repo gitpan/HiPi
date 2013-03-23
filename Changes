@@ -1,4 +1,17 @@
 
+Version 0.26  - 23 March 2013
+              - Bug in HiPi::BCM2835::I2C->set_baudrate caused peripheral 1
+                value to always be set regardless of peripheral specified.
+              - Added i2c_write_error / bus_write_error to allow case where
+                i2c error condition expected. e.g. when a device has a
+                sofware reset and does not complete the i2c transaction
+                when reset command is sent.
+              - Standardised error handling across all three i2c interfaces.
+              - HiPi::Interface::MPL3115A2 gains mode, active, oversample
+                and now uses delay based on oversample rate.
+
+Version 0.25  - 19 March 2013
+              - fixed bug in hipi-i2c installation
 
 Version 0.24  - 19 March 2013
               - Added hipi-i2c command line utility to allow none Perl code

@@ -35,44 +35,20 @@ my $build = Module::Build::HiPi->new(
 	},
 	dist_abstract   => 'Raspberry Pi GPIO Modules',
         
-        get_options     => {
-            'hipi-wx'         => { type => '!', default => 1, },
-        },
+    get_options     => {
+        'hipi-wx'         => { type => '!', default => 1, },
+        'hipi-update'     => { type => '!', default => 1, },
+    },
 
 );
 
 
 { # Get Options
-    my($doupdate, $doupgrade, $dowx, $dowiring) = ( 0,0,0,0 );
-    
-    # Leave it to user to do update and upgrade
-    
-    #if(defined($build->args('hipi-update'))) {
-    #    $doupdate = _hipi_option_is_yes($build->args('hipi-update'));
-    #} else {
-    #    $doupdate = $build->y_n('Perform apt-get update before installing dependencies? (recommended)', 'yes');
-    #}
-    
-    #if($doupdate) {
-    #    if(defined($build->args('hipi-upgrade'))) {
-    #        $doupgrade = _hipi_option_is_yes($build->args('hipi-upgrade'));
-    #    } else {
-    #        $doupgrade = $build->y_n('Perform apt-get upgrade before installing dependencies? (recommended)', 'yes');
-    #    }
-    #} else {
-    #    $doupgrade = 0;
-    #}
-    
-    if(defined($build->args('hipi-wx'))) {
-        $dowx = _hipi_option_is_yes($build->args('hipi-wx'));
-    } else {
-        $dowx = $build->y_n('Install custom wxPerl GUI dependencies? (required for GUI modules and scripts)', 'yes');
-    }
+    my $dowx      = _hipi_option_is_yes($build->args('hipi-wx'));
+    my $doupdate  = _hipi_option_is_yes($build->args('hipi-update'));
     
     $build->notes( doupdate     => $doupdate );
-    $build->notes( doupgrade    => $doupgrade );
     $build->notes( dowx         => $dowx );
-
 }
 
 $build->create_build_script();

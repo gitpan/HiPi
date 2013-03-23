@@ -14,7 +14,7 @@
 use strict;
 use warnings;
 
-our $VERSION ='0.25';
+our $VERSION ='0.26';
 
 our $rooturl = 'http://raspberrypi.znix.com/hipifiles';
 our $tmproot   = '/var/tmp/_hipiinstall';
@@ -47,7 +47,7 @@ sub plog { print $_[0] . qq(\n); }
 
 sub do_install {
     my $sudo = get_sudo_prog();
-    plog('Creating temproary directory');
+    plog('Creating temporary directory');
     qx(rm -rf $tmproot) if -e $tmproot;
     mkdir($tmproot, 0777) or exitclean('could not create temporary install directory');
     chdir($tmproot) or exitclean('could not enter temporary install directory');

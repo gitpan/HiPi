@@ -2,7 +2,7 @@
 # Package       HiPi::BCM2835::I2C
 # Description:  I2C Connection
 # Created       Wed Mar 13 13:40:32 2013
-# SVN Id        $Id: I2C.pm 1522 2013-03-18 05:11:31Z Mark Dootson $
+# SVN Id        $Id: I2C.pm 1672 2013-03-23 06:34:04Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -68,14 +68,25 @@ sub set_baudrate {
     # make sure library is initialised
     HiPi::BCM2835::bcm2835_init();
     
-    # set baudrate for both function sets
+    # force some default values / ranges
+    unless( defined($channel) && ( ( $channel == BB_I2C_PERI_0  ) || ( $channel == BB_I2C_PERI_1 ) ) ){
+        croak('channel must be defined as constant BB_I2C_PERI_0 or BB_I2C_PERI_1');
+    }
     
-    HiPi::BCM2835::bcm2835_i2c_set_baudrate($newval);
+    my $baseaddress = ( $channel == BB_I2C_PERI_0 )
+        ? BCM2835_BSC0_BASE
+        : BCM2835_BSC1_BASE;
     
-    my $baseaddress = ( $channel == BB_I2C_PERI_1 )
-        ? BCM2835_BSC1_BASE
-        : BCM2835_BSC0_BASE;
-    my $cdiv = int( BCM2835_CORE_CLK_HZ / $newval ) & 0x3FFFFE;
+    $newval ||= 100000;
+    
+    $newval = 3816 if $newval < 3816;
+    
+    # base library is hard coded for channel 1
+    if($channel == BB_I2C_PERI_1 ) {
+        HiPi::BCM2835::bcm2835_i2c_set_baudrate($newval);
+    } 
+
+    my $cdiv = (BCM2835_CORE_CLK_HZ / $newval)  & 0x3FFFFE;
     
     HiPi::BCM2835::_hipi_i2c_setClockDivider( $baseaddress, $cdiv );
 }
@@ -83,21 +94,22 @@ sub set_baudrate {
 sub get_baudrate {
     my ($class, $channel) = @_;
     # make sure library is initialised
+    HiPi::BCM2835::bcm2835_init();
     
-    unless( $channel ) {
-        $channel = ( RPI_BOARD_REVISION == 1 ) ? BB_I2C_PERI_0 : BB_I2C_PERI_1;
+    # force some default values / ranges
+    unless( defined($channel) && ( ( $channel == BB_I2C_PERI_0  ) || ( $channel == BB_I2C_PERI_1 ) ) ){
+        croak('channel must be defined as constant BB_I2C_PERI_0 or BB_I2C_PERI_1');
     }
     
-    HiPi::BCM2835::bcm2835_init();
     my $baseaddress = ( $channel == BB_I2C_PERI_1 )
         ? BCM2835_BSC1_BASE
         : BCM2835_BSC0_BASE;
 
     my $readaddess = $baseaddress + BCM2835_BSC_DIV;
+    
     my $cdiv = HiPi::BCM2835::bcm2835_peri_read($readaddess);
-    # return value with least significant part munged
-    # to meet user expectation
-    return (BCM2835_CORE_CLK_HZ / $cdiv ) & 0x3FFFFE;
+    
+    return ( BCM2835_CORE_CLK_HZ / $cdiv ) & 0x3FFFFE;
 }
 
 sub new {
@@ -179,6 +191,18 @@ sub i2c_write {
         : HiPi::BCM2835::_hipi_i2c_write( $self->_hipi_baseaddr, $writebuffer, scalar @bytes );
     
     croak qq(i2c_write failed with return value $error) if $error;
+}
+
+# expect write to error - e.g. on software reset
+sub i2c_write_error {
+    my( $self, @bytes ) = @_;
+    my $writebuffer = pack('C*', @bytes);
+    HiPi::BCM2835::_hipi_i2c_setSlaveAddress( $self->_hipi_baseaddr, $self->address );
+    my $error = ( $self->_function_mode eq 'corelib' )
+        ? HiPi::BCM2835::bcm2835_i2c_write( $writebuffer )
+        : HiPi::BCM2835::_hipi_i2c_write( $self->_hipi_baseaddr, $writebuffer, scalar @bytes );
+    
+    return $error;
 }
 
 sub i2c_read {

@@ -2,7 +2,7 @@
 # Package       HiPi::Interface::MCP23017
 # Description:  Control MCP23017 Port Extender via I2C
 # Created       Sun Dec 02 01:42:27 2012
-# SVN Id        $Id: MCP23017.pm 1521 2013-03-18 05:10:28Z Mark Dootson $
+# SVN Id        $Id: MCP23017.pm 1676 2013-03-23 12:48:29Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 

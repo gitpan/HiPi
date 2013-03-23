@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////
-// File          HiPi
-// Description:  C Utilities for HiPi
+// File          HiPi::Utils
+// Description:  C Utilities for HiPi::Utils
 // Created       Fri Feb 22 16:47:08 2013
 // SVN Id        $Id:$
 // Copyright:    Copyright (c) 2013 Mark Dootson
@@ -18,7 +18,7 @@
 #include <sys/types.h>
 #include <sys/syscall.h>
 
-MODULE = HiPi     PACKAGE = HiPi
+MODULE = HiPi::Utils     PACKAGE = HiPi::Utils
 
 void
 drop_permissions_id(touid, togid = -1)

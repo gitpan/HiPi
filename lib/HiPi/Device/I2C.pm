@@ -2,7 +2,7 @@
 # Package       HiPi::Device::I2C
 # Description:  Wrapper for I2C communucation
 # Created       Fri Nov 23 13:55:49 2012
-# SVN Id        $Id: I2C.pm 1604 2013-03-19 12:07:11Z Mark Dootson $
+# SVN Id        $Id: I2C.pm 1679 2013-03-23 13:00:07Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -25,8 +25,9 @@ use Carp;
 use Time::HiRes qw( usleep );
 use HiPi::Constant qw( :raspberry );
 use HiPi::Utils qw( is_raspberry );
+use Try::Tiny;
 
-our $VERSION ='0.25';
+our $VERSION ='0.26';
 
 __PACKAGE__->create_accessors( qw ( fh fno address i2cbuffer busmode ) );
 
@@ -116,6 +117,8 @@ sub get_baudrate {
 sub set_baudrate {
     my ($class, $newrate) = @_;
     croak('Usage HiPi::Device::I2C->set_baudrate( $baudrate )') if ( defined($newrate) && ref($newrate) );
+    $newrate ||= 3816;
+    $newrate = 3816 if $newrate < 3816;
     $_moduleinfo[0]->{params}->{baudrate} = $newrate;
     $class->load_modules(1);
 }
@@ -207,6 +210,15 @@ sub bus_write {
     }
 }
 
+sub bus_write_error {
+    my ( $self, @bytes ) = @_;
+    if( $self->busmode eq 'smbus' ) {
+        return $self->smbus_write_error( @bytes );
+    } else {
+        return $self->i2c_write_error( @bytes );
+    }
+}
+
 sub bus_read {
     my ($self, $cmdval, $numbytes) = @_;
     if( $self->busmode eq 'smbus' ) {
@@ -261,6 +273,13 @@ sub i2c_write {
     croak qq(i2c_write failed with return value $result) if $result;
 }
 
+sub i2c_write_error {
+    my( $self, @bytes ) = @_;
+    my $buffer = pack('C*', @bytes, '0');
+    my $len = @bytes;
+    _i2c_write($self->fno, $self->address, $buffer, $len );
+}
+
 sub i2c_read {
     my($self, $numbytes) = @_;
     $numbytes ||= 1;
@@ -300,6 +319,21 @@ sub smbus_write {
     }
 }
 
+sub smbus_write_error {
+    my ($self, @bytes) = @_;
+    # we allow errors - so catch auto generated error
+    try {
+        if( @bytes == 1) {
+            $self->smbus_write_byte($bytes[0]);
+        } elsif( @bytes == 2) {
+            $self->smbus_write_byte_data( @bytes );
+        } else {
+            my $command = shift @bytes;
+            $self->smbus_write_i2c_block_data($command, \@bytes );
+        }
+    };
+}
+
 sub smbus_read {
     my ($self, $cmdval, $numbytes) = @_;
     if(!defined($cmdval)) {
@@ -313,72 +347,100 @@ sub smbus_read {
 
 sub smbus_write_quick {
     my($self, $command ) = @_;
-    i2c_smbus_write_quick($self->fno, $command);
+    my $result = i2c_smbus_write_quick($self->fno, $command);
+    croak qq(smbus_write_quick failed with return value $result) if $result < 0;
+    return $result;
 }
 
 sub smbus_read_byte {
     my( $self ) = @_;
-    i2c_smbus_read_byte( $self->fno );
+    my $result = i2c_smbus_read_byte( $self->fno );
+    croak qq(smbus_read_byte failed with return value $result) if $result < 0;
+    return ( $result );
 }
 
 sub smbus_write_byte {
     my($self, $command) = @_;
-    i2c_smbus_write_byte($self->fno, $command);
+    my $result = i2c_smbus_write_byte($self->fno, $command);
+    croak qq(smbus_write_byte failed with return value $result) if $result < 0;
+    return $result;
 }
 
 sub smbus_read_byte_data {
-    my($self, $command, $data) = @_;
-    i2c_smbus_read_byte_data($self->fno, $command);
+    my($self, $command) = @_;
+    my $result = i2c_smbus_read_byte_data($self->fno, $command);
+    croak qq(smbus_read_byte_data failed with return value $result) if $result < 0;
+    return ( $result );
 }
 
 sub smbus_write_byte_data {
     my($self, $command, $data) = @_;
-    i2c_smbus_write_byte_data($self->fno,  $command, $data);
+    my $result = i2c_smbus_write_byte_data($self->fno,  $command, $data);
+    croak qq(smbus_write_byte_data failed with return value $result) if $result < 0;
+    return $result;
 }
 
 sub smbus_read_word_data {
     my($self, $command) = @_;
-    i2c_smbus_read_word_data($self->fno, $command);
+    my $result = i2c_smbus_read_word_data($self->fno, $command);
+    croak qq(smbus_read_word_data failed with return value $result) if $result < 0;
+    return ( $result );
 }
 
 sub smbus_write_word_data {
     my($self, $command, $data) = @_;
-    i2c_smbus_write_word_data($self->fno, $command, $data);
+    my $result = i2c_smbus_write_word_data($self->fno, $command, $data);
+    croak qq(smbus_write_word_data failed with return value $result) if $result < 0;
+    return $result;
 }
 
 sub smbus_read_word_swapped {
     my($self, $command) = @_;
-    i2c_smbus_read_word_swapped($self->fno, $command);
+    my $result = i2c_smbus_read_word_swapped($self->fno, $command);
+    croak qq(smbus_read_word_swapped failed with return value $result) if $result < 0;
+    return ( $result );
 }
 
 sub smbus_write_word_swapped {
     my($self, $command, $data) = @_;
-    i2c_smbus_write_word_swapped($self->fno, $command, $data);
+    my $result = i2c_smbus_write_word_swapped($self->fno, $command, $data);
+    croak qq(smbus_write_word_swapped failed with return value $result) if $result < 0;
+    return $result;
 }
 
 sub smbus_process_call {
     my($self, $command, $data) = @_;
-    i2c_smbus_process_call($self->fno, $command, $data);
+    my $result = i2c_smbus_process_call($self->fno, $command, $data);
+    croak qq(smbus_process_call failed with return value $result) if $result < 0;
+    return $result;
 }
 
 sub smbus_read_block_data {
     my($self, $command) = @_;
-    i2c_smbus_read_block_data($self->fno, $command);
+    my @result = i2c_smbus_read_block_data($self->fno, $command);
+    croak qq(smbus_read_block_data failed ) unless @result;
+    return @result;
 }
 
 sub smbus_read_i2c_block_data {
     my($self, $command, $data) = @_;
-    i2c_smbus_read_i2c_block_data($self->fno, $command, $data);
+    my @result = i2c_smbus_read_i2c_block_data($self->fno, $command, $data);
+    croak qq(smbus_read_i2c_block_data failed ) unless @result;
+    return @result;
 }
 
 sub smbus_write_block_data {
     my($self, $command, $data) = @_;
-    i2c_smbus_write_block_data($self->fno, $command, $data);
+    my $result = i2c_smbus_write_block_data($self->fno, $command, $data);
+    croak qq(smbus_write_block_data failed with return value $result) if $result < 0;
+    return $result;
 }
 
 sub smbus_write_i2c_block_data {
     my($self, $command, $data) = @_;
-    i2c_smbus_write_i2c_block_data($self->fno, $command, $data);
+    my $result = i2c_smbus_write_i2c_block_data($self->fno, $command, $data);
+    croak qq(smbus_write_i2c_block_data failed with return value $result) if $result < 0;
+    return $result;
 }
 
 1;

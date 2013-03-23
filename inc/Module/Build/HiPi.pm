@@ -10,7 +10,7 @@ use Cwd;
 use File::Path;
 our @ISA = qw( Module::Build );
 
-our $VERSION ='0.25';
+our $VERSION ='0.26';
 
 sub process_xs_files {
 	my $self = shift;
@@ -54,7 +54,6 @@ sub ACTION_build {
 	my $self = shift;
     $self->SUPER::ACTION_build;
     $self->hipi_do_update;
-    $self->hipi_do_upgrade;
     $self->hipi_do_depends;
     $self->hipi_do_wx;
 	$self->hipi_build_wiring_library;
@@ -111,19 +110,6 @@ sub hipi_do_update {
     system(qq(touch $statefile));
 }
 
-sub hipi_do_upgrade {
-    my $self = shift;
-    return unless $self->notes('doupgrade');
-    
-    my $statefile = 'upgrade.mksf';
-    return if $self->up_to_date( 'Build', $statefile );
-    
-    my $supg = hipi_check_perms();
-    $self->log_info(qq(Performing apt-get upgrade\n));
-    system(qq(${supg}apt-get -y upgrade)) and die qq(failed calling apt-get update: $!);
-    system(qq(touch $statefile));
-}
-
 sub hipi_do_depends {
     my $self = shift;
     
@@ -159,9 +145,7 @@ sub hipi_do_depends {
         zlib1g-dev
         libperl-dev
     );
-    my $cmd = qq(${supg}apt-get update);
-    system($cmd) and die qq(failed updating apt: $!);
-    $cmd = qq(${supg}apt-get -y install ) . join(' ', @debs);
+    my $cmd = qq(${supg}apt-get -y install ) . join(' ', @debs);
     system($cmd) and die qq(failed installing dependencies: $!);
     system(qq(touch $statefile));
 }
@@ -272,7 +256,7 @@ sub hipi_build_xs {
     $self->log_info(qq(Building XS Files\n));
     
     my @modules = (
-        { name => 'HiPi', version => $VERSION, autopath => 'HiPi', libs => '' },
+        { name => 'Utils', version => $VERSION, autopath => 'HiPi/Utils', libs => '' },
         { name => 'Exec', version => $VERSION, autopath => 'HiPi/Utils/Exec', libs => '-lz' },
         { name => 'I2C',  version => $VERSION, autopath => 'HiPi/Device/I2C', libs => '' },
         { name => 'SPI',  version => $VERSION, autopath => 'HiPi/Device/SPI', libs => '' },

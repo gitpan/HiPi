@@ -34,11 +34,11 @@
    "provides" : {
       "HiPi" : {
          "file" : "lib/HiPi.pm",
-         "version" : "0.25"
+         "version" : "0.26"
       },
       "HiPi::Apps::Control" : {
          "file" : "lib/HiPi/Apps/Control.pm",
-         "version" : "0.22"
+         "version" : "0.26"
       },
       "HiPi::Apps::Control::Command::GPIO" : {
          "file" : "lib/HiPi/Apps/Control/Command/GPIO.pm",
@@ -218,7 +218,7 @@
       },
       "HiPi::BCM2835" : {
          "file" : "lib/HiPi/BCM2835.pm",
-         "version" : "0.25"
+         "version" : "0.26"
       },
       "HiPi::BCM2835::I2C" : {
          "file" : "lib/HiPi/BCM2835/I2C.pm",
@@ -258,7 +258,7 @@
       },
       "HiPi::Device::I2C" : {
          "file" : "lib/HiPi/Device/I2C.pm",
-         "version" : "0.25"
+         "version" : "0.26"
       },
       "HiPi::Device::OneWire" : {
          "file" : "lib/HiPi/Device/OneWire.pm",
@@ -266,7 +266,7 @@
       },
       "HiPi::Device::SPI" : {
          "file" : "lib/HiPi/Device/SPI.pm",
-         "version" : "0.25"
+         "version" : "0.26"
       },
       "HiPi::Device::SerialPort" : {
          "file" : "lib/HiPi/Device/SerialPort.pm",
@@ -314,7 +314,7 @@
       },
       "HiPi::Interface::MPL3115A2" : {
          "file" : "lib/HiPi/Interface/MPL3115A2.pm",
-         "version" : "0.22"
+         "version" : "0.26"
       },
       "HiPi::Interface::SerLCD" : {
          "file" : "lib/HiPi/Interface/SerLCD.pm",
@@ -334,15 +334,15 @@
       },
       "HiPi::Utils" : {
          "file" : "lib/HiPi/Utils.pm",
-         "version" : "0.20"
+         "version" : "0.26"
       },
       "HiPi::Utils::Exec" : {
          "file" : "lib/HiPi/Utils/Exec.pm",
-         "version" : "0.25"
+         "version" : "0.26"
       },
       "HiPi::Wiring" : {
          "file" : "lib/HiPi/Wiring.pm",
-         "version" : "0.25"
+         "version" : "0.26"
       },
       "HiPi::Wx::App" : {
          "file" : "lib/HiPi/Wx/App.pm",
@@ -412,5 +412,5 @@
          "http://opensource.org/licenses/gpl-license.php"
       ]
    },
-   "version" : "0.25"
+   "version" : "0.26"
 }

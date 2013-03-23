@@ -1,6 +1,6 @@
 #!perl
 
-# SVN Id $Id: 060-i2c-all.t 1602 2013-03-19 11:46:37Z Mark Dootson $
+# SVN Id $Id: 060-i2c-all.t 1681 2013-03-23 13:03:31Z Mark Dootson $
 
 use Test::More tests => 270;
 
@@ -12,7 +12,11 @@ use HiPi::Interface::MPL3115A2;
 use HiPi::Interface::HTADCI2C;
 
 sub reset_mcp23017 {
-    my $mcp = HiPi::Interface::MCP23017->new( backend => 'smbus' );
+    
+    my $mcp = HiPi::Interface::MCP23017->new( backend => 'bcm2835' );
+    
+    HiPi::BCM2835->delay(100);
+    
     # all pins as outputs set low
     # configuration IOCON.BANK=0
     my @bits = $mcp->read_register_bits('IOCON');
@@ -31,12 +35,12 @@ SKIP: {
 
 
 
-for my $baudrate ( 100, 250, 500, 9600, 16000, 32000, 100000, 400000, 1000000, 1100000 ) {
+for my $baudrate ( 3816, 5000, 8000, 9600, 16000, 32000, 64000, 100000, 400000, 1000000 ) {
     HiPi::BCM2835::I2C->set_baudrate( BB_I2C_PERI_1, $baudrate );
     HiPi::Device::I2C->set_baudrate(  $baudrate );
     
 # test MCP23017 in all modes
-for my $backend( qw(  smbus bcm2835 i2c ) )
+for my $backend( qw(  bcm2835 i2c smbus) )
 {
     
     

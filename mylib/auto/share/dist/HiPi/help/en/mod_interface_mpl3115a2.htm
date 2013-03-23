@@ -1,5 +1,4 @@
 
-<!-- #define _BUILD_HIPI_WEBDOC -->
 
 <HTML>
 <head>
@@ -38,6 +37,7 @@
 <pre>    use HiPi::Interface::MPL3115A2 qw( :all );
     
     <I>register addresses</I>
+
 	MPL_REG_STATUS 
         MPL_REG_OUT_P_MSB  
         MPL_REG_OUT_P_CSB 
@@ -176,10 +176,6 @@
         
         MPL_PT_DATA_CFG_MASK
 
-    <I>standard recommended delay of 550 ms in one shot mode</I>
-
-        MPL_OSREAD_DELAY    
-
     <I>data mode flags</I>
 
         MPL_FUNC_ALTITUDE
@@ -188,6 +184,19 @@
     <I>fixed device id 196</I>
 
         MPL3115A2_ID
+
+    <I>oversample rate flags</I>
+        
+        MPL_OVERSAMPLE_1 
+        MPL_OVERSAMPLE_2
+        MPL_OVERSAMPLE_4 
+        MPL_OVERSAMPLE_8 
+        MPL_OVERSAMPLE_16 
+        MPL_OVERSAMPLE_32
+        MPL_OVERSAMPLE_64 
+        MPL_OVERSAMPLE_128
+        
+        MPL_OVERSAMPLE_MASK
 </pre>
 <h2>Object Constructor and Methods</h2>
 <h5>my $sen = HiPi::Interface::MPL3115A2->new( %params );</h5>
@@ -202,16 +211,83 @@
 
     use HiPi::BCM2835::I2C qw( :i2c );</pre>
 
+<h5>my $dev = $sen->device();</h5>
+<pre>    Allows you to access the underlying HiPi::BCM2835::I2C instance
+    directly rather than through the wrapped methods in this module.
+
+    For example, to put the device in 'raw' mode:
+
+    my ($reg) = $sen->device->i2c_read_register_rs(MPL_REG_CTRL_REG1, 1);
+    $sen->device->i2c_write(MPL_REG_CTRL_REG1, $reg | MPL_CTRL_REG1_RAW);
+
+    To ensure the device is not in 'raw' mode:
+ 
+    my ($reg) = $sen->device->i2c_read_register_rs(MPL_REG_CTRL_REG1, 1);
+    my $newmask = $reg &~MPL_REG_CTRL_REG1;
+    $sen->device->i2c_write(MPL_REG_CTRL_REG1, $newmask);</pre>
 <h5>my $active = $sen->sysmod();</h5><pre>    Returns false in standy mode, true in active mode.</pre>
 <h5>my $id = $sen->who_am_i();</h5><pre>    Returns standard id MPL3115A2_ID.
     Often used as a method of confirming correct communication.</pre>
+<h5>my $active = $sen->active([$set]);</h5>
+<pre>    Returns the current active mode. ( 1 == device in active
+    mode, 0 == device in standby mode.)
+    If the optional $set parameter is passed will set active mode on / off 
+    according to the value of $set ( 1 / 0 )</pre>
+<h5>my $mode = $sen->mode([$newmode]);</h5>
+<pre>    Returns the current measuring function as one of the exportable constants:
+
+        MPL_FUNC_ALTITUDE
+        MPL_FUNC_PRESSURE
+
+    If the optional $newmode parameter is passed as either MPL_FUNC_ALTITUDE or
+    MPL_FUNC_PRESSURE, command will set the current measuring mode to that value.</pre>
+<h5>my $oversample = $sen->oversample([$newoversample]);</h5>
+<pre>    Allows setting and retrieving over sampling rate as one of the constants:
+
+        MPL_OVERSAMPLE_1 
+        MPL_OVERSAMPLE_2
+        MPL_OVERSAMPLE_4 
+        MPL_OVERSAMPLE_8 
+        MPL_OVERSAMPLE_16 
+        MPL_OVERSAMPLE_32
+        MPL_OVERSAMPLE_64 
+        MPL_OVERSAMPLE_128</pre>
+<h5>my $delay = $sen->delay_from_oversample($oversample);</h5>
+<pre>    Gets the recommended delay in milliseconds to wait before attempting to retrieve
+    data after a one-shot wake up. The method is used internally by the os_xxxxx
+    methods.....
+
+    my ( $curreg ) = $self->device->i2c_read_register_rs(MPL_REG_CTRL_REG1, 1);
+
+    my $oversample  = ( $curreg & MPL_OVERSAMPLE_MASK );
+    my $delayms = $self->delay_from_oversample($oversample);
+
+    $self->device->i2c_write(MPL_REG_CTRL_REG1, $curreg | MPL_CTRL_REG1_OST );
+
+    $self->device->delay($delayms);
+
+    my( $pmsb, $pcsb, $plsb, $tmsb, $tlsb)
+                  = $self->device->i2c_read_register_rs(MPL_REG_OUT_P_MSB, 5);</pre>
+
+<h5>$sen->reboot();</h5>
+<pre>    Sets the soft reset flag on the MPL3115A2. After this call, the device will
+    be reset to startup defaults.</pre>
 <h5>my ( $alt, $pre, $tmp ) = $sen->os_all_data();</h5><pre>    One shot method returning an array containing converted values
     for altitude, pressure and temperature.</pre>
 <h5>my ( $altpre, $tmp ) = $sen->os_both_data($function);</h5><pre>    $function is one of MPL_FUNC_PRESSURE or MPL_FUNC_ALTITUDE
     One shot method returning an array containing 2 converted values
     for altitude or pressure as chosen by $function, and temperature.</pre>
-<h5>my $altitude = $sen->os_altitude();</h5><pre>    One shot method returning altitude value.</pre>
-<h5>my $pressure = $sen->os_pressure();</h5><pre>    One shot method returning pressure value.</pre>
+<h5>my ( $altpre, $tmp ) = $sen->os_any_data();</h5>
+<pre>    One shot method returning an array containing 2 converted values
+    for either altitude or pressure, whichever is the current data mode, and 
+    temperature. Unlike os_all_data, os_pressure and os_altitude, this method never
+    pushes the device into standby mode.</pre>
+<h5>my $altitude = $sen->os_altitude();</h5><pre>    One shot method returning altitude value.
+    If the current mode is not altitude, the device will be put into standby mode 
+    and switched to altitide operation.</pre>
+<h5>my $pressure = $sen->os_pressure();</h5><pre>    One shot method returning pressure value.
+    If the current mode is not pressure, the device will be put into standby mode 
+    and switched to pressure operation.</pre></pre>
 <h5>my $temperature = $sen->os_temperature();</h5><pre>    One shot method returning temperature value.</pre>
 <h5>my $pressure = $sen->unpack_pressure($msb, $csb, $lsb);</h5><pre>    Takes the values returned from a call such as :
     $sen->device->i2c_read_register_rs(MPL_REG_OUT_P_MSB, 3)

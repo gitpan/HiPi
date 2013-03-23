@@ -2,7 +2,7 @@
 # Package       HiPi::Interface::MPL3115A2
 # Description:  Interface to MPL3115A2 precision Altimeter
 # Created       Wed Mar 13 08:56:53 2013
-# SVN Id        $Id: MPL3115A2.pm 1517 2013-03-18 05:04:24Z Mark Dootson $
+# SVN Id        $Id: MPL3115A2.pm 1691 2013-03-23 14:15:50Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,7 +20,7 @@ use parent qw( HiPi::Interface );
 use HiPi::Constant qw( :raspberry );
 use HiPi::BCM2835::I2C qw( :i2c );
 
-our $VERSION = '0.22';
+our $VERSION = '0.26';
 
 __PACKAGE__->create_accessors( qw( address peripheral osdelay ) );
 
@@ -205,7 +205,8 @@ use constant {
     MPL_BIT_TDEFE        => 0,
     
     
-    MPL_OSREAD_DELAY     => 550, 
+    MPL_OSREAD_DELAY     => 1060, # left for compatibility with code that uses it.
+                                  
     MPL_FUNC_ALTITUDE    => 1,
     MPL_FUNC_PRESSURE    => 2,
     MPL3115A2_ID         => 0xC4,
@@ -214,6 +215,18 @@ use constant {
     MPL_CONTROL_MASK     => 0b00111000, #128 oversampling
     MPL_BYTE_MASK        => 0xFF,
     MPL_WORD_MASK        => 0xFFFF,
+    
+    MPL_OVERSAMPLE_1     => 0b00000000,
+    MPL_OVERSAMPLE_2     => 0b00001000,
+    MPL_OVERSAMPLE_4     => 0b00010000,
+    MPL_OVERSAMPLE_8     => 0b00011000,
+    MPL_OVERSAMPLE_16    => 0b00100000,
+    MPL_OVERSAMPLE_32    => 0b00101000,
+    MPL_OVERSAMPLE_64    => 0b00110000,
+    MPL_OVERSAMPLE_128   => 0b00111000,
+    
+    MPL_OVERSAMPLE_MASK  => 0b00111000,
+    
 };
 
 {
@@ -348,6 +361,17 @@ use constant {
         MPL_CONTROL_MASK
         MPL_BYTE_MASK
         MPL_WORD_MASK
+        
+        MPL_OVERSAMPLE_1 
+        MPL_OVERSAMPLE_2
+        MPL_OVERSAMPLE_4 
+        MPL_OVERSAMPLE_8 
+        MPL_OVERSAMPLE_16 
+        MPL_OVERSAMPLE_32
+        MPL_OVERSAMPLE_64 
+        MPL_OVERSAMPLE_128
+        
+        MPL_OVERSAMPLE_MASK
     );
     push @EXPORT_OK, @const;
 
@@ -380,16 +404,6 @@ sub new {
     
     my $self = $class->SUPER::new(%params);
     return $self;
-}
-
-sub sysmod {
-    my $self = shift;
-    ( $self->device->i2c_read_register_rs(MPL_REG_SYSMOD, 1))[0];
-}
-
-sub who_am_i {
-    my $self = shift;
-    ( $self->device->i2c_read_register_rs(MPL_REG_WHO_AM_I, 1))[0];
 }
 
 sub unpack_altitude {
@@ -477,18 +491,104 @@ sub pack_pressure {
     return($msb, $csb, $lsb);
 }
 
+sub sysmod {
+    my $self = shift;
+    ( $self->device->i2c_read_register_rs(MPL_REG_SYSMOD, 1))[0];
+}
+
+sub who_am_i {
+    my $self = shift;
+    ( $self->device->i2c_read_register_rs(MPL_REG_WHO_AM_I, 1))[0];
+}
+
+sub active {
+    my ($self, $set) = @_;
+    my ( $curreg ) = $self->device->i2c_read_register_rs(MPL_REG_CTRL_REG1, 1);
+    my $rval = $curreg & MPL_CTRL_REG1_SBYB;
+    if (defined($set)) {
+        my $setmask = ( $set ) ? MPL_CTRL_REG1_SBYB | $curreg : $curreg &~MPL_CTRL_REG1_SBYB;
+        $self->device->i2c_write(MPL_REG_CTRL_REG1, $setmask);
+        $rval = $setmask & MPL_CTRL_REG1_SBYB;
+    }
+    return $rval;
+}
+
+sub reboot {
+    my $self = shift;
+    $self->device->i2c_write_error(MPL_REG_CTRL_REG1, MPL_CTRL_REG1_RST);
+    $self->device->delay(100);
+}
+
+
+sub oversample {
+    my($self, $newval) = @_;
+    my ( $curreg ) = $self->device->i2c_read_register_rs(MPL_REG_CTRL_REG1, 1);
+    my $currentval = $curreg & MPL_OVERSAMPLE_MASK;
+    if(defined($newval)) {
+        $newval &= MPL_OVERSAMPLE_MASK;
+        unless( $currentval == $newval ) {
+            if( $curreg & MPL_CTRL_REG1_SBYB ) {
+                croak('cannot set oversample rate while system is active');
+            }
+            $self->device->i2c_write(MPL_REG_CTRL_REG1, $curreg | $newval );
+            ( $curreg ) = $self->device->i2c_read_register_rs(MPL_REG_CTRL_REG1, 1);
+            $currentval = $curreg & MPL_OVERSAMPLE_MASK;
+        }
+    }
+    return $currentval;
+}
+
+sub delay_from_oversample {
+    my ($self, $oversample) = @_;
+    # calculate delay needed for oversample to complete.
+    # spec sheet says 60ms at oversample 1 and 1000ms at oversample 128
+    # so if we range at 100ms to 1100ms and the oversample register bits
+    # contain a value of 0 through 7 representing 1 to 128
+    # delay = 100 + 2^$oversample * 1000/128
+    $oversample >>= 3;
+    return int(100.5 + 2**$oversample * 1000/128);
+}
+
+sub raw {
+    my($self, $newval) = @_;
+    my ( $curreg ) = $self->device->i2c_read_register_rs(MPL_REG_CTRL_REG1, 1);
+    my $currentval = $curreg & MPL_CTRL_REG1_RAW;
+    if(defined($newval)) {
+        $newval &= MPL_CTRL_REG1_RAW;
+        unless( $currentval == $newval ) {
+            if( $curreg & MPL_CTRL_REG1_SBYB ) {
+                croak('cannot set raw mode while system is active');
+            }
+            $self->device->i2c_write(MPL_REG_CTRL_REG1, $curreg | $newval );
+            ( $curreg ) = $self->device->i2c_read_register_rs(MPL_REG_CTRL_REG1, 1);
+            $currentval = $curreg & MPL_CTRL_REG1_RAW;
+        }
+    }
+    return $currentval;
+}
+
+sub mode {
+    my($self, $newmode) = @_;
+    my ( $curreg ) = $self->device->i2c_read_register_rs(MPL_REG_CTRL_REG1, 1);
+    my $currentmode = ( $curreg & MPL_CTRL_REG1_ALT ) ? MPL_FUNC_ALTITUDE : MPL_FUNC_PRESSURE;
+    if(defined($newmode)) {
+        unless( $currentmode == $newmode ) {
+            if( $curreg & MPL_CTRL_REG1_SBYB ) {
+                croak('cannot set altitude / pressure mode while system is active');
+            }
+            my $setmask = ($newmode == MPL_FUNC_ALTITUDE) ? $curreg | MPL_CTRL_REG1_ALT : $curreg &~MPL_CTRL_REG1_ALT;
+            $self->device->i2c_write(MPL_REG_CTRL_REG1, $setmask );
+            ( $curreg ) = $self->device->i2c_read_register_rs(MPL_REG_CTRL_REG1, 1);
+            $currentmode = ( $curreg & MPL_CTRL_REG1_ALT ) ? MPL_FUNC_ALTITUDE : MPL_FUNC_PRESSURE;
+        }
+    }
+    return $currentmode;
+}
+
 sub os_temperature {
     my $self = shift;
-    # set one shot bit
-    $self->device->i2c_write(MPL_REG_CTRL_REG1, MPL_CONTROL_MASK|MPL_CTRL_REG1_OST );
-    # clr one shot bit
-    $self->device->i2c_write(MPL_REG_CTRL_REG1, MPL_CONTROL_MASK );
-    # wait before read
-    $self->device->delay(MPL_OSREAD_DELAY);
-    # get and convert data
-    my ($msb, $lsb) = $self->device->i2c_read_register_rs(MPL_REG_OUT_T_MSB, 2);
-    # convert temperature data
-    return  $self->unpack_temperature( $msb, $lsb );    
+    my ( $pvalue, $tvalue ) = $self->os_any_data; 
+    return  $tvalue;    
 }
 
 sub os_pressure {
@@ -503,52 +603,69 @@ sub os_altitude {
     return $pdata;
 }
 
-sub os_both_data {
-    my($self, $function) = @_;
-    $function //= 0; # will make default pressure
+sub os_any_data {
+    my $self = shift;
+    my ( $curreg ) = $self->device->i2c_read_register_rs(MPL_REG_CTRL_REG1, 1);
     
-    my $ctrlmask = ( $function == MPL_FUNC_ALTITUDE )
-        ? MPL_CONTROL_MASK|MPL_CTRL_REG1_ALT
-        : MPL_CONTROL_MASK;
+    my $currentmode = ( $curreg & MPL_CTRL_REG1_ALT ) ? MPL_FUNC_ALTITUDE : MPL_FUNC_PRESSURE;
+    my $oversample  = ( $curreg & MPL_OVERSAMPLE_MASK );
     
-    # set mode
-    $self->device->i2c_write(MPL_REG_CTRL_REG1, $ctrlmask );
+    # whatever the original state of CTRL_REG1, we want to restore it with
+    # one shot bit cleared
+    my $restorereg = $curreg &~MPL_CTRL_REG1_OST;
+    
+    my $delayms = $self->delay_from_oversample($oversample);
+        
+    # clear any one shot bit
+    $self->device->i2c_write(MPL_REG_CTRL_REG1, $curreg &~MPL_CTRL_REG1_OST );
     # set one shot bit
-    $self->device->i2c_write(MPL_REG_CTRL_REG1, $ctrlmask|MPL_CTRL_REG1_OST );
-    # clr one shot bit
-    $self->device->i2c_write(MPL_REG_CTRL_REG1, $ctrlmask );
+    $self->device->i2c_write(MPL_REG_CTRL_REG1, $curreg | MPL_CTRL_REG1_OST );
     
     # wait before read
-    $self->device->delay(MPL_OSREAD_DELAY);
-    
-    ## test data
-    #my @vals = $self->device->i2c_read_register_rs(0, 72);
-    #for (my $i = 0; $i < @vals; $i++){
-    #    print $vals[$i];
-    #    if( ($i + 1) % 6 ) {
-    #        print ' ';
-    #    } else {
-    #        print qq(\n);
-    #    }
-    #}
-    
+    $self->device->delay($delayms);
+        
     # read data       
     my( $pmsb, $pcsb, $plsb, $tmsb, $tlsb)
         = $self->device->i2c_read_register_rs(MPL_REG_OUT_P_MSB, 5);
     
     # convert pressure / altitude data
     my $pdata;
-    if( $function == MPL_FUNC_ALTITUDE ) {
+    if( $currentmode == MPL_FUNC_ALTITUDE ) {
         $pdata = $self->unpack_altitude( $pmsb, $pcsb, $plsb );
     } else {
         $pdata = $self->unpack_pressure( $pmsb, $pcsb, $plsb );
     }
     
     # convert temperature data
-    my $tdata = $self->unpack_temperature( $tmsb, $tlsb );    
+    my $tdata = $self->unpack_temperature( $tmsb, $tlsb );
+    
+    # restore REG1 clearing any one shot bit
+    $self->device->i2c_write(MPL_REG_CTRL_REG1, $restorereg );
     
     # return both
     return ( $pdata, $tdata );    
+}
+
+sub os_both_data {
+    my($self, $function) = @_;
+    $function //= MPL_FUNC_PRESSURE; # default it not defined
+    
+    my ( $curreg ) = $self->device->i2c_read_register_rs(MPL_REG_CTRL_REG1, 1);
+    
+    my $currentmode   = ( $curreg & MPL_CTRL_REG1_ALT ) ? MPL_FUNC_ALTITUDE : MPL_FUNC_PRESSURE;
+    my $currentactive = $curreg & 0x01;
+    
+    # we can't change datamodes if system is currently active
+    if($currentactive && ( $currentmode !=  $function )) {
+        croak('cannot switch between pressure and altitude modes when system is active');
+    }
+    
+    my $ctrlmask = ( $function == MPL_FUNC_ALTITUDE )
+        ? $curreg | MPL_CTRL_REG1_ALT
+        : $curreg &~MPL_CTRL_REG1_ALT;
+    
+    $self->device->i2c_write(MPL_REG_CTRL_REG1, $ctrlmask );
+    $self->os_any_data;
 }
 
 sub os_all_data {
