@@ -67,6 +67,7 @@ topic_i2cdev.htm
 topic_w1dev.htm
 topic_gpiodev.htm
 topic_load_drivers_startup.htm
+topic_i2cbus_2.htm
 
 [ALIAS]
 #include "hipicontrol_alias.h"

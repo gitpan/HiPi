@@ -34,7 +34,7 @@
    "provides" : {
       "HiPi" : {
          "file" : "lib/HiPi.pm",
-         "version" : "0.26"
+         "version" : "0.27"
       },
       "HiPi::Apps::Control" : {
          "file" : "lib/HiPi/Apps/Control.pm",
@@ -218,11 +218,11 @@
       },
       "HiPi::BCM2835" : {
          "file" : "lib/HiPi/BCM2835.pm",
-         "version" : "0.26"
+         "version" : "0.27"
       },
       "HiPi::BCM2835::I2C" : {
          "file" : "lib/HiPi/BCM2835/I2C.pm",
-         "version" : "0.22"
+         "version" : "0.27"
       },
       "HiPi::BCM2835::Pin" : {
          "file" : "lib/HiPi/BCM2835/Pin.pm",
@@ -258,7 +258,7 @@
       },
       "HiPi::Device::I2C" : {
          "file" : "lib/HiPi/Device/I2C.pm",
-         "version" : "0.26"
+         "version" : "0.27"
       },
       "HiPi::Device::OneWire" : {
          "file" : "lib/HiPi/Device/OneWire.pm",
@@ -266,7 +266,7 @@
       },
       "HiPi::Device::SPI" : {
          "file" : "lib/HiPi/Device/SPI.pm",
-         "version" : "0.26"
+         "version" : "0.27"
       },
       "HiPi::Device::SerialPort" : {
          "file" : "lib/HiPi/Device/SerialPort.pm",
@@ -334,15 +334,15 @@
       },
       "HiPi::Utils" : {
          "file" : "lib/HiPi/Utils.pm",
-         "version" : "0.26"
+         "version" : "0.27"
       },
       "HiPi::Utils::Exec" : {
          "file" : "lib/HiPi/Utils/Exec.pm",
-         "version" : "0.26"
+         "version" : "0.27"
       },
       "HiPi::Wiring" : {
          "file" : "lib/HiPi/Wiring.pm",
-         "version" : "0.26"
+         "version" : "0.27"
       },
       "HiPi::Wx::App" : {
          "file" : "lib/HiPi/Wx/App.pm",
@@ -360,6 +360,34 @@
          "file" : "lib/HiPi/Wx/Frame.pm",
          "version" : "0.22"
       },
+      "HiPi::Wx::LogGui" : {
+         "file" : "lib/HiPi/Wx/LogGui.pm",
+         "version" : "0.27"
+      },
+      "HiPi::Wx::LogGui::LogDialog" : {
+         "file" : "lib/HiPi/Wx/LogGui.pm",
+         "version" : "0.02"
+      },
+      "HiPi::Wx::LogGui::LogWindowGrid" : {
+         "file" : "lib/HiPi/Wx/LogGui/LogWindowGrid.pm",
+         "version" : "0.27"
+      },
+      "HiPi::Wx::LogGui::LogWindowGrid::LogLevelRenderer" : {
+         "file" : "lib/HiPi/Wx/LogGui/LogWindowGrid.pm",
+         "version" : 0
+      },
+      "HiPi::Wx::LogGui::LogWindowGrid::TimeStampRenderer" : {
+         "file" : "lib/HiPi/Wx/LogGui/LogWindowGrid.pm",
+         "version" : 0
+      },
+      "HiPi::Wx::LogGui::LogWindowListCtrl" : {
+         "file" : "lib/HiPi/Wx/LogGui/LogWindowListCtrl.pm",
+         "version" : "0.27"
+      },
+      "HiPi::Wx::LogGui::Logger" : {
+         "file" : "lib/HiPi/Wx/LogGui.pm",
+         "version" : "0.01"
+      },
       "HiPi::Wx::Menu" : {
          "file" : "lib/HiPi/Wx/Menu.pm",
          "version" : "0.22"
@@ -367,6 +395,10 @@
       "HiPi::Wx::Panel" : {
          "file" : "lib/HiPi/Wx/Panel.pm",
          "version" : "0.22"
+      },
+      "HiPi::Wx::TopLevelWindow" : {
+         "file" : "lib/HiPi/Wx/TopLevelWindow.pm",
+         "version" : "0.27"
       },
       "HiPi::Wx::ValidatedCheckBox" : {
          "file" : "lib/HiPi/Wx/ValidatedCheckBox.pm",
@@ -409,8 +441,8 @@
    "resources" : {
       "homepage" : "http://raspberry.znix.com/",
       "license" : [
-         "http://opensource.org/licenses/gpl-license.php"
+         "http://www.gnu.org/licenses/gpl-3.0.txt"
       ]
    },
-   "version" : "0.26"
+   "version" : "0.27"
 }

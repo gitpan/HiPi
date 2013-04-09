@@ -2,7 +2,7 @@
 # Package       HiPi::Wx::App
 # Description:  Base Class For Wx Apps
 # Created       Mon Feb 25 13:27:30 2013
-# SVN Id        $Id: App.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
+# SVN Id        $Id: App.pm 1718 2013-03-27 00:39:56Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -36,7 +36,7 @@ use Wx::Help;
 use Wx::Html;
 use Wx::FS;
 use Wx::Locale;
-
+use HiPi::Wx::LogGui;
 use HiPi::Language;
 use Try::Tiny;
 
@@ -86,6 +86,12 @@ sub OnLoadHelpFiles {
 
 sub OnInit {
     my $self = shift;
+    #---------------------------------------------
+    # LogTarget
+    #---------------------------------------------
+    HiPi::Wx::LogGui::SetLogControlClass('HiPi::Wx::LogGui::LogWindowGrid');
+    HiPi::Wx::LogGui::EnableLogGui(1);
+    
     #---------------------------------------------
     # Initialise Handlers
     #---------------------------------------------
@@ -295,6 +301,23 @@ sub GetConfigFilePath {
     my $self = shift;
     return $self->CreateDataFile( 'wxapp.config' );
 }
+
+sub GetValidTopWindow {
+    my $self = shift;
+    my $topwindow = wxTheApp->GetTopWindow;
+    
+    # Check we have a genuine top window
+    unless(
+        $topwindow &&
+        $topwindow->can('AllowHiPiWxLogGuiParent') &&
+        $topwindow->AllowHiPiWxLogGuiParent
+          )
+    {
+        $topwindow = undef;
+    }
+    return $topwindow;
+}
+
 
 #---------------------------------------------
 # Event Handlers

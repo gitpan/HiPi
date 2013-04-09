@@ -39,6 +39,7 @@
 <A HREF="mod_interface_htbackpackv2.htm">HiPi::Interface::HTBackpackV2</A> <I>( as an optional backend )</I><br />
 </p>
 <p>You can also access your i2c peripherals through the kernel device driver. See: <A HREF="mod_device_i2c.htm">HiPi::Device::I2C</A></p>
+<p>For Model B Rev 2 and Model A boards you can gain access to a second I2C bus on the P5 header. See: <A HREF="topic_i2cbus_2.htm">Second I2C Bus</A>.</p>
 <p>The main advantage of HiPi::BCM2835::I2C is that it provides support for i2c devices that require a repeated start byte to be sent when reading from the device. For example the MPL3115A2 pressure and temperature sensor. Currently, repeated starts are not supported in the kernel driver.</p> 
 <h2>Class Methods</h2>
 <h5>HiPi::BCM2835::I2C->get_baudrate($channel);</h5>
@@ -46,7 +47,14 @@
     $channel can be one of BB_I2C_PERI_0 or BB_I2C_PERI_1.
     On model A and Model B Revision 2 boards BB_I2C_PERI_1 is broken
     out on Raspberry Pins 3 and 5. For Model B Revsion 1 boards, 
-    BB_I2C_PERI_0 is broken out on these pins.</pre>
+    BB_I2C_PERI_0 is broken out on these pins.
+    
+    Please not that the object method $obj->get_baudrate returns the 
+    baudrate that will be used in transfers using that particular
+    instance of HiPi::BCM2835::I2C. You may be able to apply different
+    bus speeds to different devices using individual instance 
+    settings. 
+</pre>
 <h5>HiPi::BCM2835::I2C->set_baudrate( $channel, $baudrate );</h5>
 <pre>    Sets the baudrate of the BSC peripheral in $channel.
     $channel can be one of BB_I2C_PERI_0 or BB_I2C_PERI_1.
@@ -65,7 +73,13 @@
       32000  - the Broadcom I2C peripherals don't support
 	       clock stretching so if you have a device that
 	       employs this, a baudrate of 32000 ( or perhaps
-	       even lower ) will often allow the device to work.</pre>
+	       even lower ) will often allow the device to work.
+
+    Please not that the object method $obj->set_baudrate($newrate) sets
+    the baudrate that will be used in transfers using that particular
+    instance of HiPi::BCM2835::I2C. You may be able to apply different
+    bus speeds to different devices using individual instance 
+    settings.</pre>
 <h2>Exported Constants</h2>
 <pre>    use HiPi::BCM2835 qw( :i2c );
 
@@ -98,13 +112,37 @@
 
     Note that on revision 1 boards only BB_I2C_PERI_0 is available
     while on revision 2 boards only BB_I2C_PERI_1 is available unless
-    you solder a connector to PAD 5.
+    you solder a connector to PAD 5. See <A HREF="topic_i2cbus_2.htm">Second I2C Bus</A>
 
     For interface modules that use I2C, you may specify
 
         backend => 'bcm2835'
 
     in the constructor to use this module as a backend.</pre>
+<h5>$dev->get_baudrate();</h5>
+<pre>    Returns the baudrate that will be used in transfers using this 
+    particular instance of HiPi::BCM2835::I2C. You may be able to apply 
+    different bus speeds to different devices using individual instance 
+    settings. 
+</pre>
+<h5>$dev->set_baudrate( $baudrate );</h5>
+<pre>    Sets the baudrate that will be used in transfers using this 
+    particular instance of HiPi::BCM2835::I2C. You may be able to apply 
+    different bus speeds to different devices using individual instance 
+    settings for baudrate.
+
+    Common values for baudrate are:
+    
+       3816  - the minimum supported
+     100000  - the i2c standard
+     400000  - fast i2c standard
+    1000000  - seems to be the fastest reliable speed that this
+	       implementation supports. Of course, all the 
+	       devices on your bus must support this too.
+      32000  - the Broadcom I2C peripherals don't support
+	       clock stretching so if you have a device that
+	       employs this, a baudrate of 32000 ( or perhaps
+	       even lower ) will often allow the device to work.</pre>
 <h3>Busmode Methods</h3>
 <p>HiPi::BCM2835::I2C provides wrappers for its i2c calls. Note that <A HREF="mod_device_i2c.htm">HiPi::Device::I2C</A> also supports these methods so you may write code that works with backends i2c, smbus and bcm2835.</p>
 <h5>$dev->bus_write( @params );</h5>

@@ -2,7 +2,7 @@
 # Package       HiPi::Wx::Frame
 # Description:  Base Class For Wx Frames
 # Created       Mon Feb 25 13:27:30 2013
-# SVN Id        $Id: Frame.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
+# SVN Id        $Id: Frame.pm 1718 2013-03-27 00:39:56Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -18,7 +18,8 @@ use strict;
 use warnings;
 use Wx qw( wxTheApp :id :window :misc :frame :statusbar :bitmap);
 use Wx::Event qw( EVT_CLOSE EVT_MENU EVT_UPDATE_UI );
-use base qw( Wx::Frame HiPi::Class HiPi::Wx::Common );
+use HiPi::Wx::TopLevelWindow;
+use base qw( Wx::Frame HiPi::Wx::TopLevelWindow );
 
 our $VERSION = '0.22';
 

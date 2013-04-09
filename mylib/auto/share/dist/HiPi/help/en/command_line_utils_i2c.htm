@@ -29,7 +29,7 @@
 </TR>
 </TABLE>
 
-<H2>HiPi I2C Utility</H2><p>The <A HREF="mod_gpio_bcm2835_i2c.htm">HiPi::BCM2835::I2C</A> module provides access to i2c devices including those that require repeated start signals before a read can take place.</p>
+<H2>HiPi I2C Utility</H2><p>The <A HREF="mod_gpio_bcm2835_i2c.htm">HiPi::BCM2835::I2C</A> module provides access to i2c devices including those that require repeated start signals before a read can take place. It also allows you to enable or disable individual i2c buses so that for Model B Rev 2 and Model A boards you can enable a second i2c bus on the P5 header. ( see :<A HREF="topic_i2cbus_2.htm">Second I2C Bus</A>).</p>
 <p>To allow access to this facility from outside your Perl scripts HiPi modules installs a utility application <B>hipi-i2c</B> ( <code>/usr/local/bin/hipi-i2c</code> ).</p>
 <p>The utility is installed with setuid permission so allways runs as root allowing the necessary access to the i2c hardware peripherals on the Pi.</p>
 <p>The calling process user must be a member of the group <B>i2c</B> to execute the utility.</p>
@@ -38,7 +38,7 @@
 <h3>Command Line Help</h3><pre>
 usage : hipi-i2c MODE I2C [ADDRESS] [REGISTER] [BAUDRATE] [ARG1 ARG2 ARG3]
     
-    MODE     = w[rite] | r[read] | h[elp] | b[aud]
+    MODE     = w[rite] | r[read] | h[elp] | b[aud] | e[nable]
     
     I2C      = 0 | 1   The i2c perphipheral to use
     
@@ -84,6 +84,15 @@ get current baudrate on I2C peripheral 1
 
         hipi-i2c b 1
 
+enable i2c bus 1
+        hipi-i2c e 1 1
+      
+enable i2c bus 0
+        hipi-i2c e 0 1
+    
+disable i2c bus 0
+        hipi-i2c e 0 0
+
 Calls to read return a list of space separated byte values on
 stdout.
 
@@ -119,7 +128,22 @@ Common values for baudrate are:
            employs this, a baudrate of 32000 ( or perhaps
            even lower ) will often allow the device to work. 
 
+Calls to enable allow you to disable and enable the available 
+I2C buses. Parameters are
+    e(command) bus(0 or 1) enable(0 or 1)
+So to disable bus 1
+
+    hipi-i2c e 1 0
+
+to enable bus 0
+
+    hipi-i2c e 0 1
+
+See also : <A HREF="topic_i2cbus_2.htm">Second I2C Bus</A>
+
 On error, the utility will exit with a none zero value.
+
+
 </pre>
  </FONT>
 <br>

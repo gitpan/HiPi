@@ -2,7 +2,7 @@
 # Package       HiPi::Class
 # Description:  base class
 # Created       Sat Nov 24 15:51:05 2012
-# SVN Id        $Id: Class.pm 1202 2013-03-13 23:59:00Z Mark Dootson $
+# SVN Id        $Id: Class.pm 1718 2013-03-27 00:39:56Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 

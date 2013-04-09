@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::SelectPanel
 # Description:  Select Manage Panel
 # Created       Mon Feb 25 13:29:44 2013
-# SVN Id        $Id: SelectPanel.pm 1075 2013-03-12 02:53:45Z Mark Dootson $
+# SVN Id        $Id: SelectPanel.pm 1716 2013-03-26 22:17:17Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -56,7 +56,7 @@ sub new {
         t('1 Wire Kernel Device Driver') ,
     ];
     
-    $selected //= SELECT_GPIO_PAD1;
+    $selected //= SELECT_GPIO_PAD1();
     my $self = $class->SUPER::new($parent, wxID_ANY, '', wxDefaultPosition, wxDefaultSize, $textoptions, wxCB_READONLY|wxBORDER_THEME);
     $self->SetItemBitmap(0, Wx::Bitmap->new( wxTheApp->GetResourceFile( 'image/rasp16.png' ),wxBITMAP_TYPE_PNG ));
     $self->SetItemBitmap(1, Wx::Bitmap->new( wxTheApp->GetResourceFile( 'image/gpio1.png' ),wxBITMAP_TYPE_PNG ));

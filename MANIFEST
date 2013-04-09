@@ -33,6 +33,8 @@ BCM2835/src/src/test.c
 Build.PL
 Changes
 COPYING
+examples/roomtemp.pl
+examples/setuppostfix.pl
 Exec.xs
 I2C.xs
 inc/buildexecs.pl
@@ -105,8 +107,12 @@ lib/HiPi/Wx/App.pm
 lib/HiPi/Wx/Common.pm
 lib/HiPi/Wx/Dialog.pm
 lib/HiPi/Wx/Frame.pm
+lib/HiPi/Wx/LogGui.pm
+lib/HiPi/Wx/LogGui/LogWindowGrid.pm
+lib/HiPi/Wx/LogGui/LogWindowListCtrl.pm
 lib/HiPi/Wx/Menu.pm
 lib/HiPi/Wx/Panel.pm
+lib/HiPi/Wx/TopLevelWindow.pm
 lib/HiPi/Wx/ValidatedCheckBox.pm
 lib/HiPi/Wx/ValidatedText.pm
 lib/HiPi/Wx/Validator.pm
@@ -137,6 +143,7 @@ mylib/auto/share/dist/HiPi/help/en/controlinfo.png
 mylib/auto/share/dist/HiPi/help/en/controlspidev.png
 mylib/auto/share/dist/HiPi/help/en/controlw1dev.png
 mylib/auto/share/dist/HiPi/help/en/forward.png
+mylib/auto/share/dist/HiPi/help/en/helpp5.JPG
 mylib/auto/share/dist/HiPi/help/en/hipi-bcm2835-pin.htm
 mylib/auto/share/dist/HiPi/help/en/hipi-device-gpio-pin.htm
 mylib/auto/share/dist/HiPi/help/en/hipi-pin.htm
@@ -173,6 +180,7 @@ mylib/auto/share/dist/HiPi/help/en/mod_util_constant.htm
 mylib/auto/share/dist/HiPi/help/en/mod_util_lang.htm
 mylib/auto/share/dist/HiPi/help/en/mod_util_raspberrypi.htm
 mylib/auto/share/dist/HiPi/help/en/mod_util_utils.htm
+mylib/auto/share/dist/HiPi/help/en/modelap5.JPG
 mylib/auto/share/dist/HiPi/help/en/nanoblacklist.png
 mylib/auto/share/dist/HiPi/help/en/nanomodules.png
 mylib/auto/share/dist/HiPi/help/en/overview.htm
@@ -181,6 +189,7 @@ mylib/auto/share/dist/HiPi/help/en/topic.htm
 mylib/auto/share/dist/HiPi/help/en/topic_gpiodev.htm
 mylib/auto/share/dist/HiPi/help/en/topic_gpiopins.htm
 mylib/auto/share/dist/HiPi/help/en/topic_gpiopins_rev1.htm
+mylib/auto/share/dist/HiPi/help/en/topic_i2cbus_2.htm
 mylib/auto/share/dist/HiPi/help/en/topic_i2cdev.htm
 mylib/auto/share/dist/HiPi/help/en/topic_load_drivers_startup.htm
 mylib/auto/share/dist/HiPi/help/en/topic_spidev.htm
@@ -205,6 +214,8 @@ mylib/auto/share/dist/HiPi/image/spidev.png
 mylib/auto/share/dist/HiPi/image/w1.png
 mylib/include/local-i2c-dev.h
 mylib/include/ppport.h
+obsdump.txt
+'Raspberry Pi Hipi.komodoproject'
 README
 SPI.xs
 suidbin/hipi-i2c.pl

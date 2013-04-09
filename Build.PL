@@ -4,11 +4,11 @@ use strict;
 use lib 'inc';
 require Module::Build::HiPi;
 
-our $VERSION = '0.20';
+our $VERSION = '0.27';
 
 my $build = Module::Build::HiPi->new(
 	module_name        => 'HiPi',
-	license            => 'gpl',
+	license            => 'GPL_3',
 	dist_author        => q{Mark Dootson <mdootson@cpan.org>},
 	dist_version_from  => 'lib/HiPi.pm',
 	configure_requires => {
@@ -16,22 +16,22 @@ my $build = Module::Build::HiPi->new(
 	    'Module::Build' => '0',
 	},
 	add_to_cleanup => [
-            '*.o',
-            'blib',
-            '*.a',
-            '*.so',
-            '*.c',
-            '*.xsc',
-            '*.bs',
-            '*.mksf',
+        '*.o',
+        'blib',
+        '*.a',
+        '*.so',
+        '*.c',
+        '*.xsc',
+        '*.bs',
+        '*.mksf',
 	],
 	meta_merge => {
-            resources => {
-                homepage   => 'http://raspberry.znix.com/',
-            },
-            no_index => {
-                directory => [qw<inc mylib BCM2835 Wiring suidbin userbin>],
-            },
+        resources => {
+            homepage   => 'http://raspberry.znix.com/',
+        },
+        no_index => {
+            directory => [qw<inc mylib BCM2835 Wiring suidbin userbin>],
+        },
 	},
 	dist_abstract   => 'Raspberry Pi GPIO Modules',
         

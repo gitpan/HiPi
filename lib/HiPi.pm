@@ -2,7 +2,7 @@
 # Package       HiPi
 # Description:  High level Perl modules for Raspberry Pi
 # Created       Fri Nov 23 11:33:11 2012
-# SVN Id        $Id: HiPi.pm 1704 2013-03-23 21:08:56Z Mark Dootson $
+# SVN Id        $Id: HiPi.pm 1712 2013-03-25 16:25:58Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -17,10 +17,9 @@ package HiPi;
 use strict;
 use warnings;
 use Carp;
-use XSLoader;
 use HiPi::Utils qw( is_raspberry );
 
-our $VERSION ='0.26';
+our $VERSION ='0.27';
 
 our $sudoprog = 'sudo';
 
@@ -120,7 +119,7 @@ L<http://raspberry.znix.com/hipidocs/>
 
 The distribution home site is
 
-L<http://raspberry.znix.com/
+L<http://raspberry.znix.com/>
     
 =head1 LICENSE
 

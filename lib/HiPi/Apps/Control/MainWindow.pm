@@ -2,7 +2,7 @@
 # Package       HiPi::Apps::Control::MainWindow
 # Description:  Main Window for HiPi Apps Control
 # Created       Mon Feb 25 13:29:44 2013
-# SVN Id        $Id: MainWindow.pm 1076 2013-03-13 08:55:10Z Mark Dootson $
+# SVN Id        $Id: MainWindow.pm 1718 2013-03-27 00:39:56Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 

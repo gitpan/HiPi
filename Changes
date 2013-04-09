@@ -1,4 +1,11 @@
 
+Version 0.27  - 08 April 2013
+              - Using second I2C channel on P5 now tested and supported
+              - HiPi::BCM2835::I2C now supports per-instance transfer rates
+              - hipi-i2c utility extended to support en/disable of i2c buses
+              - GPIO PAD 5 documentation and GUI App display had 3V3 and 5V0
+                pins reversed.
+
 Version 0.26  - 23 March 2013
               - Bug in HiPi::BCM2835::I2C->set_baudrate caused peripheral 1
                 value to always be set regardless of peripheral specified.

@@ -2,7 +2,7 @@
 # Package       HiPi::Device::GPIO
 # Description:  System GPIO Device
 # Created       Wed Feb 20 02:40:29 2013
-# SVN Id        $Id: GPIO.pm 1589 2013-03-19 07:33:09Z Mark Dootson $
+# SVN Id        $Id: GPIO.pm 1717 2013-03-26 23:34:36Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -16,12 +16,11 @@ package HiPi::Device::GPIO;
 use 5.14.0;
 use strict;
 use warnings;
+use HiPi;
 use parent qw( HiPi::Device );
 use HiPi::Constant qw( :raspberry );
 use Carp;
-use Try::Tiny;
 use HiPi::Device::GPIO::Pin;
-use HiPi;
 
 our $VERSION = '0.22';
 

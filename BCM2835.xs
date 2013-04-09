@@ -422,7 +422,7 @@ _hipi_i2c_setSlaveAddress( baseaddress, addr )
     volatile uint32_t* baseaddress
     uint8_t addr
   CODE:
-	hipi_i2c_setSlaveAddress( baseaddress, addr );
+    hipi_i2c_setSlaveAddress( baseaddress, addr );
 
 
 void
@@ -430,6 +430,16 @@ _hipi_i2c_setClockDivider( baseaddress, divider )
     volatile uint32_t* baseaddress
     uint16_t divider
   CODE:
+    hipi_i2c_setClockDivider( baseaddress, divider );
+
+
+void
+_hipi_i2c_set_transfer_params( baseaddress, addr, divider )
+    volatile uint32_t* baseaddress
+    uint8_t addr
+    uint16_t divider
+  CODE:
+    hipi_i2c_setSlaveAddress( baseaddress, addr );
     hipi_i2c_setClockDivider( baseaddress, divider );
 
 

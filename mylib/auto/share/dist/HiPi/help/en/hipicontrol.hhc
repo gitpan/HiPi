@@ -271,6 +271,11 @@
         <param name="Local" value="topic_load_drivers_startup.htm">
         <param name="ID" value=1053>
         </OBJECT>
+    <LI><OBJECT type="text/sitemap">
+        <param name="Name" value="Second I2C Bus">
+        <param name="Local" value="topic_i2cbus_2.htm">
+        <param name="ID" value=1054>
+        </OBJECT>
   </UL>
 </UL>
 </BODY></HTML>

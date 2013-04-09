@@ -3,7 +3,7 @@
 #########################################################################################
 # Description:  Direct access to I2C functions via /dev/mem
 # Created       Mon Mar 18 22:38:41 2013
-# svn id        $Id: hipi-i2c.pl 1672 2013-03-23 06:34:04Z Mark Dootson $
+# svn id        $Id: hipi-i2c.pl 1726 2013-04-09 11:16:26Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -18,7 +18,7 @@ use HiPi::BCM2835::I2C qw( :all );
 use Try::Tiny;
 use Carp;
 
-our $VERSION ='0.26';
+our $VERSION ='0.27';
 
 my @args = @ARGV;
 
@@ -42,6 +42,9 @@ given ( $mode ) {
     when( /^b/i ) {
         do_baud(@args);
     }
+    when( /^e/i ) {
+        do_enable(@args);
+    }
     default {
         do_usage(1);
     }
@@ -51,6 +54,30 @@ sub _handle_byte_arg {
     my $inarg = shift;
     my $outarg = ( $inarg  =~ /^0/ ) ? oct($inarg) : $inarg & 0xFF;
     return $outarg;
+}
+
+sub do_enable {
+    my ( $inbus, $enable ) = @_;
+    my $peripheral;
+    if($inbus eq '0' || $inbus eq '1' ) {
+        do_usage(1) if(!defined($enable));
+    } else {
+        do_usage(1);
+    }
+    $enable = ( $enable ) ? 1 : 0;
+    try {
+        require HiPi::BCM2835;
+        HiPi::BCM2835::bcm2835_init();
+        if( $inbus eq '0' ) {
+            HiPi::BCM2835::hipi_set_I2C0( $enable );
+        }
+        if( $inbus eq '1' ) {
+            HiPi::BCM2835::hipi_set_I2C1( $enable );
+        }
+    } catch {
+        croak(qq(enable i2c bus $inbus failed : $_));
+    };
+    print qq(1\n);
 }
 
 sub do_baud {
@@ -65,16 +92,16 @@ sub do_baud {
     }
     
     if( $newrate ) {
-        # die if we're running suid by non-root user
-        if( $< ) {
-            print qq(only root user may change baudrate\n);
-            exit(1);
-        }
+        ### die if we're running suid by non-root user
+        ##if( $< ) {
+        ##    print qq(only root user may change baudrate\n);
+        ##    exit(1);
+        ##}
         
-        # I can't get baudrate above 1100000 working with my
-        # i2c devices, but around 1600000 should be supported
-        if( ($newrate < 3816) || ($newrate > 1600000) ) {
-            croak('baudrate must be in the range 3816 - 1600000');
+        # I can't get baudrate above 1000000 working with my
+        # i2c devices
+        if( ($newrate < 3816) || ($newrate > 1000000) ) {
+            croak('baudrate must be in the range 3816 - 1000000');
         }
         
         my $changerate = $newrate & 0x1FFFFF;
@@ -167,7 +194,7 @@ sub do_usage {
     my $usage = q(
 usage : hipi-i2c MODE I2C [ADDRESS] [REGISTER] [BAUDRATE] [ARG1 ARG2 ARG3]
     
-    MODE     = w[rite] | r[read] | h[elp] | b[aud]
+    MODE     = w[rite] | r[read] | h[elp] | b[aud] | e[nable]
     I2C      = 0 | 1   The i2c perphipheral to use
     ADDRESS  = The device address on the i2c bus when mode r|w
     REGISTER = The register on the device you wish
@@ -200,6 +227,15 @@ usage : hipi-i2c MODE I2C [ADDRESS] [REGISTER] [BAUDRATE] [ARG1 ARG2 ARG3]
         
       get current baudrate on I2C peripheral 1
         hipi-i2c b 1
+      
+      enable i2c bus 1
+        hipi-i2c e 1 1
+      
+      enable i2c bus 0
+        hipi-i2c e 0 1
+    
+      disable i2c bus 0
+        hipi-i2c e 0 0
       
 );
     say $usage;

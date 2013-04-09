@@ -30,7 +30,7 @@
 </TABLE>
 
 <H2>HiPi::BCM2835</H2>
-<p>The HiPi::BCM2835 module provides a Perl wrapper around Mike McCauley's bcm2835 C library. <br>( http://www.open.com.au/mikem/bcm2835/index.html ). </p>
+<p>The HiPi::BCM2835 module provides a Perl wrapper around Mike McCauley's bcm2835 C library. <br>( http://www.airspayce.com/mikem/bcm2835/ ). </p>
 <p>Mike also provides his own Perl wrapper for the library - Device::BCM2835</p>
 <p>HiPi::BCM2835 provides direct access to the peripheral registers of the Broadcom BCM2835 System On a Chip. (SOC)</p>
 <p>It provides access to GPIO and other IO functions on the SOC, allowing access to all of the the GPIO pins exposed on the Raspberry Pi board so you can control and interface with various external devices.</p>
@@ -383,7 +383,7 @@ function of each GPIO pin, read the input state and set the output state.</pre>
 <h2>SPI Access</h2>
 
 These functions let you use SPI0 (Serial Peripheral Interface) to interface
-with an external SPI device.
+with an external SPI device by accessing the Broadcom peripheral directly. You may wish to use the kernel device driver instead as wrapped by <A HREF="mod_device_spi.htm">HiPi::Device::SPI</A>.
 <h5>$bcm->spi_begin();</h5>
 <pre>    Start SPI operations. Forces RPi SPI0 pins P1-19 (MOSI), P1-21 (MISO),
     P1-23 (CLK), P1-24 (CE0) and P1-26 (CE1) to alternate function ALT0, 
@@ -492,6 +492,8 @@ with an external SPI device.
 These functions let you use I2C (The Broadcom Serial Control bus with 
 the Philips I2C bus/interface version 2.1 January 2000.) to interface 
 with an external I2C device.
+It is recommended that you do not use these methods directly but instead
+use an instance of <A HREF="mod_gpio_bcm2835_i2c.htm">HiPi::BCM2835::I2C</A>.
 
 <h5>$bcm->i2c_begin();</h5>
 <pre>    Start I2C operations. Forces RPi I2C pins P1-03 (SDA) and P1-05 

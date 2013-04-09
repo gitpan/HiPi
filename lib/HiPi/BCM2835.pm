@@ -2,7 +2,7 @@
 # Package       HiPi::BCM2835
 # Description:  Wrapper for bcm2835 C library - Access to /dev/mem
 # Created       Fri Nov 23 13:55:49 2012
-# SVN Id        $Id: BCM2835.pm 1612 2013-03-19 14:43:54Z Mark Dootson $
+# SVN Id        $Id: BCM2835.pm 1726 2013-04-09 11:16:26Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -24,7 +24,7 @@ use HiPi;
 use HiPi::Utils qw( is_raspberry );
 use HiPi::Constant qw( :raspberry :spi :i2c);
 
-our $VERSION ='0.26';
+our $VERSION ='0.27';
 
 if( is_raspberry ) {
     XSLoader::load('HiPi::BCM2835', $VERSION);
@@ -591,13 +591,13 @@ _register_exported_constants( qw(
 #-------------------------------------------------------------
 
 use constant {
-    BCM2835_BSC_C                => 0x0000,      # BSC Master Control
-    BCM2835_BSC_S 		         => 0x0004,      # BSC Master Status
+    BCM2835_BSC_C                    => 0x0000,      # BSC Master Control
+    BCM2835_BSC_S 		     => 0x0004,      # BSC Master Status
     BCM2835_BSC_DLEN		     => 0x0008,      # BSC Master Data Length
-    BCM2835_BSC_A 		         => 0x000c,      # BSC Master Slave Address
+    BCM2835_BSC_A 		     => 0x000c,      # BSC Master Slave Address
     BCM2835_BSC_FIFO		     => 0x0010,      # BSC Master Data FIFO
-    BCM2835_BSC_DIV		         => 0x0014,      # BSC Master Clock Divider
-    BCM2835_BSC_DEL		         => 0x0018,      # BSC Master Data Delay
+    BCM2835_BSC_DIV		     => 0x0014,      # BSC Master Clock Divider
+    BCM2835_BSC_DEL		     => 0x0018,      # BSC Master Data Delay
     BCM2835_BSC_CLKT		     => 0x001c,      # BSC Master Clock Stretch Timeout
     BCM2835_BSC_C_I2CEN 	     => 0x00008000,  # I2C Enable, 0 = disabled, 1 = enabled
     BCM2835_BSC_C_INTR 		     => 0x00000400,  # Interrupt on RX
@@ -813,6 +813,11 @@ sub hipi_set_I2C0 {
     my @pins = ( I2C0_SDA,  I2C0_SCL );
     
     if( $on ) {
+        if(RPI_BOARD_REVISION > 1) {
+            # we must disable the S5 pin 0 & 1 ALT0 function
+            bcm2835_gpio_fsel(0, BCM2835_GPIO_FSEL_INPT);
+            bcm2835_gpio_fsel(1, BCM2835_GPIO_FSEL_INPT);
+        }
         for my $pin ( @pins ) {
             bcm2835_gpio_fsel($pin, BCM2835_GPIO_FSEL_ALT0);
             bcm2835_gpio_set_pud($pin, BCM2835_GPIO_PUD_UP);
@@ -821,6 +826,11 @@ sub hipi_set_I2C0 {
         for my $pin ( @pins ) {
             bcm2835_gpio_fsel($pin, BCM2835_GPIO_FSEL_INPT);
             bcm2835_gpio_set_pud($pin, BCM2835_GPIO_PUD_OFF);
+        }
+        if( RPI_BOARD_REVISION > 1) {
+            # we must enable the S5 pin 0 & 1 ALT0 function
+            bcm2835_gpio_fsel(0, BCM2835_GPIO_FSEL_ALT0);
+            bcm2835_gpio_fsel(1, BCM2835_GPIO_FSEL_ALT0);
         }
     }
 }

@@ -31,8 +31,9 @@
 
 <H2>HiPi::Device::I2C</H2><p>The HiPi::Device::I2C module provides access to the kernel driver for the I2C bus.</p>
 <p>See : <A HREF="topic_i2cdev.htm">I2C Device Driver</A></p>
-<p>The settings for the I2C device can be controlled in the <A HREF="control_app_i2cdev.htm">HiPi Control GUI</A>.</p>
-<p>The module implements both I2C and SMBus protocol calls. The SMBus protocol appears to be the most widely supported on the i2c bus. It is likely that your i2c devices support it.</p>
+<p>The settings for the I2C device can be controlled in the <A HREF="control_app_i2cdev.htm">HiPi Control GUI</A>. This includes the baudrate or transfer rate used on the I2C bus.</p>
+<p>On Model B Revision 2 and Model A boards, you may use a second I2C bus by attaching a connector to the P5 Pad on the Raspberry Pi. See: <A HREF="topic_i2cbus_2.htm">Second I2C Bus</A>.</p>
+<p>This module implements both I2C and SMBus protocol calls. The SMBus protocol appears to be the most widely supported on the i2c bus. It is likely that your i2c devices support it.</p>
 <p>The following interface modules use HiPi::Device::I2C as a backend and may contain code that helps with your own usage.</p>
 <p><A HREF="mod_interface_htadci2c.htm">HiPi::Interface::HTADCI2C</A><br />
 <A HREF="mod_interface_mcp23017.htm">HiPi::Interface::MCP23017</A><br />

@@ -22,8 +22,8 @@
 /// BCM 2835).
 ///
 /// The version of the package that this documentation refers to can be downloaded 
-/// from http://www.open.com.au/mikem/bcm2835/bcm2835-1.22.tar.gz
-/// You can find the latest version at http://www.open.com.au/mikem/bcm2835
+/// from http://www.airspayce.com/mikem/bcm2835/bcm2835-1.25.tar.gz
+/// You can find the latest version at http://www.airspayce.com/mikem/bcm2835
 ///
 /// Several example programs are provided.
 ///
@@ -120,7 +120,7 @@
 ///
 /// The bcm2835_i2c_* functions allow you to control the BCM 2835 BSC interface,
 /// allowing you to send and received data by I2C ("eye-squared cee"; generically referred to as "two-wire interface") .
-/// For more information about I²C, see http://en.wikipedia.org/wiki/I%C2%B2C
+/// For more information about I?C, see http://en.wikipedia.org/wiki/I%C2%B2C
 ///
 /// The Raspberry Pi V2 GPIO pins used for I2C are:
 ///
@@ -220,8 +220,14 @@
 /// \version 1.21 delayMicroseconds is now not susceptible to 32 bit timer overruns. 
 ///               Patch courtesy Jeremy Mortis.
 /// \version 1.22 Fixed incorrect definition of BCM2835_GPFEN0 which broke the ability to set 
-///               falling edge events. Reported by MArk Dootson.
-/// \author  Mike McCauley (mikem@airspayce.com)
+///               falling edge events. Reported by Mark Dootson.
+/// \version 1.23 Added bcm2835_i2c_set_baudrate and bcm2835_i2c_read_register_rs. 
+///               Improvements to bcm2835_i2c_read and bcm2835_i2c_write functions
+///               to fix ocasional reads not completing. Patched by Mark Dootson.
+/// \version 1.24 Mark Dootson p[atched a problem with his previously submitted code
+///               under high load from other processes. 
+/// \version 1.25 Updated author and distribution location details to airspayce.com
+/// \author  Mike McCauley (mikem@airspayce.com) DO NOT CONTACT THE AUTHOR DIRECTLY: USE THE LISTS
 
 
 

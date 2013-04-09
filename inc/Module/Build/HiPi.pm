@@ -10,7 +10,7 @@ use Cwd;
 use File::Path;
 our @ISA = qw( Module::Build );
 
-our $VERSION ='0.26';
+our $VERSION ='0.27';
 
 sub process_xs_files {
 	my $self = shift;
@@ -145,6 +145,11 @@ sub hipi_do_depends {
         zlib1g-dev
         libperl-dev
     );
+    
+#    	libdbd-pg-perl
+#	libdbd-mysql-perl
+#	libdbd-sqlite3-perl
+    
     my $cmd = qq(${supg}apt-get -y install ) . join(' ', @debs);
     system($cmd) and die qq(failed installing dependencies: $!);
     system(qq(touch $statefile));
