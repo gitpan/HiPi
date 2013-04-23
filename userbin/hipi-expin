@@ -14,7 +14,7 @@ use 5.14.0;
 use strict;
 use warnings;
 
-our $VERSION ='0.27';
+our $VERSION ='0.28';
 
 my( $group, $pinpath ) = @ARGV;
 
@@ -43,12 +43,13 @@ sub update_export_perm {
 sub update_pin_perm {
     my $rootpath = shift;
     my ($name,$passwd,$gid,$members) = getgrnam($group);
+    chmod(0775, $rootpath);
+    chown(-1, $gid, $rootpath);
     for my $file (qw( direction edge value active_low ) ) {
         my $filepath = qq($rootpath/$file);
         chmod(0664, $filepath);
         chown(-1, $gid, $filepath);
     }
 }
-
 
 1;

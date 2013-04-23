@@ -2,7 +2,7 @@
 # Package       HiPi::Utils
 # Description:  HiPi Utilities
 # Created       Sun Feb 24 05:16:17 2013
-# SVN Id        $Id: Utils.pm 1708 2013-03-23 23:45:06Z Mark Dootson $
+# SVN Id        $Id: Utils.pm 1732 2013-04-09 18:23:09Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -20,7 +20,7 @@ use Carp;
 require Exporter;
 use base qw( Exporter );
 
-our $VERSION ='0.27';
+our $VERSION ='0.28';
 
 XSLoader::load('HiPi::Utils', $VERSION) if is_raspberry();
 

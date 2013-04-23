@@ -2,7 +2,7 @@
 # Package       HiPi::Device::GPIO::Pin
 # Description:  Pin
 # Created       Wed Feb 20 04:37:38 2013
-# SVN Id        $Id: Pin.pm 1589 2013-03-19 07:33:09Z Mark Dootson $
+# SVN Id        $Id: Pin.pm 1733 2013-04-23 22:13:29Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -21,8 +21,9 @@ use Carp;
 use Fcntl;
 use HiPi::Constant qw( :raspberry );
 use HiPi;
+use IO::File;
 
-our $VERSION = '0.22';
+our $VERSION = '0.28';
 
 __PACKAGE__->create_accessors( qw( valfh pinroot dirfh ) );
 
@@ -36,8 +37,8 @@ sub _open {
     
     my $valfile = qq($pinroot/value);
     my $dirfile = qq($pinroot/direction);
-    sysopen($params{valfh}, $valfile, O_RDWR  ) or croak qq(failed to open sysfs value file for pin $params{pinid} : $!);
-    sysopen($params{dirfh}, $dirfile, O_RDWR  ) or croak qq(failed to open sysfs mode file for pin $params{pinid} : $!);
+    $params{valfh} = IO::File->new($valfile, O_RDWR, 0) or croak qq(failed to open $valfile for pin $params{pinid} : $!);
+    $params{dirfh} = IO::File->new($dirfile, O_RDWR, 0) or croak qq(failed to open $dirfile for pin $params{pinid} : $!);
     $params{pinroot} = $pinroot;
     my $self = $class->SUPER::_open(%params);
     return $self;
@@ -45,23 +46,23 @@ sub _open {
 
 sub _do_getvalue {
     my $self = shift;
-    sysseek($self->valfh,0,0);
+    seek($self->valfh,0,0);
     my $result;
-    sysread($self->valfh, $result, 16);
+    read($self->valfh, $result, 16);
     chomp($result);
     return $result;
 }
 
 sub _do_setvalue {
     my ($self, $newval) = @_;
-    syswrite($self->valfh, $newval);
+    write($self->valfh, $newval);
 }
 
 sub _do_getmode {
     my $self = shift;
-    sysseek($self->dirfh,0,0);
+    seek($self->dirfh,0,0);
     my $result;
-    sysread($self->dirfh, $result, 16);
+    read($self->dirfh, $result, 16);
     chomp($result);
     return ( $result eq 'out' ) ? RPI_PINMODE_OUTP : RPI_PINMODE_INPT;
 }
@@ -69,9 +70,9 @@ sub _do_getmode {
 sub _do_setmode {
     my ($self, $newdir) = @_;
     if( ($newdir == RPI_PINMODE_OUTP) || ($newdir eq 'out') )  {
-        syswrite($self->dirfh, 'out');
+        write($self->dirfh, 'out');
     } else {
-        syswrite($self->dirfh, 'in');
+        write($self->dirfh, 'in');
     }
     return $newdir;
 }
@@ -79,9 +80,8 @@ sub _do_setmode {
 sub _reset_value_handle {
     my $self = shift;
     close($self->valfh);
-    my $newfh;
     my $filepath = $self->pinroot . '/value';
-    sysopen($newfh, $filepath, O_RDWR ) or croak qq( failed to open file $filepath : $!);
+    my $newfh = IO::File->new($filepath, O_RDWR, 0) or croak qq(failed to open $filepath : $!);
     $self->valfh($newfh);
 }
 

@@ -14,7 +14,7 @@
 use strict;
 use warnings;
 
-our $VERSION ='0.27';
+our $VERSION ='0.28';
 
 our $rooturl = 'http://raspberrypi.znix.com/hipifiles';
 our $tmproot   = '/var/tmp/_hipiinstall';

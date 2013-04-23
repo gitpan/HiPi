@@ -2,7 +2,7 @@
 # Package       HiPi::Device::SPI
 # Description:  Wrapper for SPI communucation
 # Created       Fri Nov 23 13:55:49 2012
-# SVN Id        $Id: SPI.pm 1708 2013-03-23 23:45:06Z Mark Dootson $
+# SVN Id        $Id: SPI.pm 1732 2013-04-09 18:23:09Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -26,7 +26,7 @@ use HiPi;
 use HiPi::Utils qw( is_raspberry );
 use Try::Tiny;
 
-our $VERSION ='0.27';
+our $VERSION ='0.28';
 
 __PACKAGE__->create_accessors( qw ( fh fno delay speed bitsperword ) );
 

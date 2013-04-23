@@ -33,8 +33,6 @@ BCM2835/src/src/test.c
 Build.PL
 Changes
 COPYING
-examples/roomtemp.pl
-examples/setuppostfix.pl
 Exec.xs
 I2C.xs
 inc/buildexecs.pl
@@ -214,8 +212,6 @@ mylib/auto/share/dist/HiPi/image/spidev.png
 mylib/auto/share/dist/HiPi/image/w1.png
 mylib/include/local-i2c-dev.h
 mylib/include/ppport.h
-obsdump.txt
-'Raspberry Pi Hipi.komodoproject'
 README
 SPI.xs
 suidbin/hipi-i2c.pl

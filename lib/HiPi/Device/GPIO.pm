@@ -2,7 +2,7 @@
 # Package       HiPi::Device::GPIO
 # Description:  System GPIO Device
 # Created       Wed Feb 20 02:40:29 2013
-# SVN Id        $Id: GPIO.pm 1717 2013-03-26 23:34:36Z Mark Dootson $
+# SVN Id        $Id: GPIO.pm 1733 2013-04-23 22:13:29Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -21,8 +21,9 @@ use parent qw( HiPi::Device );
 use HiPi::Constant qw( :raspberry );
 use Carp;
 use HiPi::Device::GPIO::Pin;
+use Time::HiRes;
 
-our $VERSION = '0.22';
+our $VERSION = '0.28';
 
 use constant {
     DEV_GPIO_PIN_STATUS_NONE         => 0x00,
@@ -64,6 +65,22 @@ sub export_pin {
     if( !-d $pinroot ) {
         HiPi::system_sudo_shell(qq(/bin/echo $pinno > /sys/class/gpio/export)) and croak qq(failed to export pin $pinno : $!);
     }
+    {
+        # We have to wait for the system to export the pin correctly.
+        # Max 10 seconds
+        my $checkpath = qq($pinroot/value);
+        my $counter = 100;
+        while( $counter ){
+            last if( -e $checkpath && -w $checkpath );
+            Time::HiRes::sleep( 0.1 );
+            $counter --;
+        }
+        
+        unless( $counter ) {
+            croak qq(failed to export pin $checkpath);
+        }
+    }
+    
     if( $gname ) {
         # change exported permissions
         for my $fname ( qw(value edge direction active_low) ) {

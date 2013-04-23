@@ -24,7 +24,7 @@ no_index:
 provides:
   HiPi:
     file: lib/HiPi.pm
-    version: 0.27
+    version: 0.28
   HiPi::Apps::Control:
     file: lib/HiPi/Apps/Control.pm
     version: 0.26
@@ -162,7 +162,7 @@ provides:
     version: 0.22
   HiPi::BCM2835:
     file: lib/HiPi/BCM2835.pm
-    version: 0.27
+    version: 0.28
   HiPi::BCM2835::I2C:
     file: lib/HiPi/BCM2835/I2C.pm
     version: 0.27
@@ -186,19 +186,19 @@ provides:
     version: 0.20
   HiPi::Device::GPIO:
     file: lib/HiPi/Device/GPIO.pm
-    version: 0.22
+    version: 0.28
   HiPi::Device::GPIO::Pin:
     file: lib/HiPi/Device/GPIO/Pin.pm
-    version: 0.22
+    version: 0.28
   HiPi::Device::I2C:
     file: lib/HiPi/Device/I2C.pm
-    version: 0.27
+    version: 0.28
   HiPi::Device::OneWire:
     file: lib/HiPi/Device/OneWire.pm
     version: 0.21
   HiPi::Device::SPI:
     file: lib/HiPi/Device/SPI.pm
-    version: 0.27
+    version: 0.28
   HiPi::Device::SerialPort:
     file: lib/HiPi/Device/SerialPort.pm
     version: 0.22
@@ -249,13 +249,13 @@ provides:
     version: 0.20
   HiPi::Utils:
     file: lib/HiPi/Utils.pm
-    version: 0.27
+    version: 0.28
   HiPi::Utils::Exec:
     file: lib/HiPi/Utils/Exec.pm
-    version: 0.27
+    version: 0.28
   HiPi::Wiring:
     file: lib/HiPi/Wiring.pm
-    version: 0.27
+    version: 0.28
   HiPi::Wx::App:
     file: lib/HiPi/Wx/App.pm
     version: 0.22
@@ -328,4 +328,4 @@ provides:
 resources:
   homepage: http://raspberry.znix.com/
   license: http://www.gnu.org/licenses/gpl-3.0.txt
-version: 0.27
+version: 0.28
