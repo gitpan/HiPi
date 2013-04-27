@@ -1,7 +1,8 @@
 #########################################################################################
-# Description:  Build Exec Scripts
-# Created       Sat Feb 23 17:21:10 2013
-# svn id        $Id: buildexecs.pl 1738 2013-04-23 23:50:25Z Mark Dootson $
+# Package       HiPi::Interrupt::Wiring
+# Description:  Wiring Interrupt Handler
+# Created       Wed Apr 24 05:59:33 2013
+# SVN Id        $Id: Wiring.pm 1753 2013-04-25 15:32:30Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -9,22 +10,19 @@
 #               version.
 #########################################################################################
 
+package HiPi::Interrupt::Wiring;
+
+#########################################################################################
+
 use strict;
 use warnings;
-use HiPi::Utils::Exec;
+use parent qw( HiPi::Interrupt::Base );
 
-for my $file ( qw( suidbin/hipi-i2c suidbin/hipi-pud ) ) {
-    my @paths = split(/\//, $file);
-    my $execname  = pop @paths;
-    my $directory = join('/', @paths);
-    
-    my $builder = HiPi::Utils::Exec->new(
-        workingdir => $directory,
-        sourceperl => qq($file.pl),
-        outputexec => $execname,
-    );
-    
-    $builder->build;
+sub new {
+    my ($class, %params) = @_;
+    $params{pinclass} = 'wire';
+    my $self = $class->SUPER::new(%params);
+    return $self;
 }
 
 1;

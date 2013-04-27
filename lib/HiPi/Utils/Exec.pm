@@ -2,7 +2,7 @@
 # Package       HiPi::Utils::Exec
 # Description:  Executable Wrappers
 # Created       Tue Mar 19 03:01:17 2013
-# SVN Id        $Id: Exec.pm 1732 2013-04-09 18:23:09Z Mark Dootson $
+# SVN Id        $Id: Exec.pm 1753 2013-04-25 15:32:30Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -28,7 +28,7 @@ use HiPi::Utils qw( is_raspberry );
 
 __PACKAGE__->create_accessors( qw( workingdir sourceperl outputexec ) );
 
-our $VERSION ='0.28';
+our $VERSION ='0.32';
 
 XSLoader::load 'HiPi::Utils::Exec', $VERSION if is_raspberry;
 

@@ -2,7 +2,7 @@
 # Package       HiPi::BCM2835
 # Description:  Wrapper for bcm2835 C library - Access to /dev/mem
 # Created       Fri Nov 23 13:55:49 2012
-# SVN Id        $Id: BCM2835.pm 1732 2013-04-09 18:23:09Z Mark Dootson $
+# SVN Id        $Id: BCM2835.pm 1753 2013-04-25 15:32:30Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -17,6 +17,8 @@ package HiPi::BCM2835;
 use 5.14.0;
 use strict;
 use warnings;
+use threads;
+use threads::shared;
 use parent qw( HiPi::Device );
 use XSLoader;
 use Carp;
@@ -24,7 +26,7 @@ use HiPi;
 use HiPi::Utils qw( is_raspberry );
 use HiPi::Constant qw( :raspberry :spi :i2c);
 
-our $VERSION ='0.28';
+our $VERSION ='0.32';
 
 if( is_raspberry ) {
     XSLoader::load('HiPi::BCM2835', $VERSION);
@@ -32,9 +34,15 @@ if( is_raspberry ) {
     require HiPi::Dummy::BCM2835;
 }
 
-our $_memmapped = 0;
+our $_memmapped : shared;
+
+{
+    lock $_memmapped;
+    $_memmapped = 0;
+}
 
 sub bcm2835_init {
+    lock $_memmapped;
     unless( $_memmapped ) {
         _hipi_bcm2835_init() or croak 'Failed to initialise libbcm2835';
         $_memmapped = 1;
@@ -42,6 +50,9 @@ sub bcm2835_init {
 }
 
 sub bcm2835_close {
+    # only close in main thread which has tid of zero
+    return if threads->tid;
+    lock $_memmapped;
     if( $_memmapped ) {
         _hipi_bcm2835_close();
         $_memmapped = 0;

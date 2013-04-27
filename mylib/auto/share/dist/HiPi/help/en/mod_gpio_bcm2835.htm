@@ -20,7 +20,7 @@
 
 <A HREF="mod_gpio.htm"><img align=center src="back.png" BORDER=0 ALT="Previous"></A>
 
-<A HREF="hipi-bcm2835-pin.htm"><img align=center src="forward.png" BORDER=0 ALT="Next"></A>
+<A HREF="mod_gpio_wiring.htm"><img align=center src="forward.png" BORDER=0 ALT="Next"></A>
 </TD>
 </TR>
 <TR>
@@ -592,7 +592,7 @@ implementation in Perl.
 <h5>my $pinobj = $bmc->get_pin( $pinid );</h5>
 <pre>    $pinid  GPIO Pin Number
 
-    returns an object instance of <A HREF="hipi-bcm2835-pin.htm">HiPi::BCM2835::Pin</A></pre>
+    returns an object instance of <A HREF="pin_modules_bcm2835.htm">HiPi::BCM2835::Pin</A></pre>
 <h5>my $function = $bmc->gpio_fget( $pin );</h5>
 <pre>    $pin  GPIO Pin Number
     
@@ -654,6 +654,7 @@ implementation in Perl.
     HiPi::Constant module under the tag :raspberry
 
     use HiPi::Constant qw( :raspberry );
+
 </pre>
 <h1>Functional Interface</h1>
 <p>Function names are the same as their object oriented counterparts but prefixed with <code>bcm2835_</code></p>
@@ -978,7 +979,7 @@ tag :i2c
 
 <A HREF="mod_gpio.htm"><img align=center src="back.png" BORDER=0 ALT="Previous"></A>
 
-<A HREF="hipi-bcm2835-pin.htm"><img align=center src="forward.png" BORDER=0 ALT="Next"></A>
+<A HREF="mod_gpio_wiring.htm"><img align=center src="forward.png" BORDER=0 ALT="Next"></A>
 </center>
 
 <HR>

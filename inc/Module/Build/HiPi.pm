@@ -10,7 +10,7 @@ use Cwd;
 use File::Path;
 our @ISA = qw( Module::Build );
 
-our $VERSION ='0.28';
+our $VERSION ='0.32';
 
 sub process_xs_files {
 	my $self = shift;
@@ -51,7 +51,7 @@ sub ACTION_clean {
 }
 
 sub ACTION_build {
-	my $self = shift;
+    my $self = shift;
     $self->SUPER::ACTION_build;
     $self->hipi_do_update;
     $self->hipi_do_depends;
@@ -144,9 +144,10 @@ sub hipi_do_depends {
         git
         zlib1g-dev
         libperl-dev
+        libio-epoll-perl
     );
     
-#    	libdbd-pg-perl
+#   libdbd-pg-perl
 #	libdbd-mysql-perl
 #	libdbd-sqlite3-perl
     
@@ -358,7 +359,10 @@ sub hipi_build_xs {
 
 sub hipi_build_execs {
     my $self = shift;
-    return if $self->up_to_date( [ 'Build', 'suidbin/hipi-i2c.pl' ], [ 'suidbin/hipi-i2c' ] );
+    return if $self->up_to_date(
+        [ 'Build', 'suidbin/hipi-i2c.pl', 'suidbin/hipi-pud.pl' ],
+        [ 'suidbin/hipi-i2c', 'suidbin/hipi-pud' ]
+    );
     $self->log_info(qq(Building Executables\n));
     
     my @cmd = (
@@ -381,15 +385,21 @@ sub hipi_install_scriptfiles {
     
     my $supg = hipi_check_perms();
     
+    my $suidgroups = {
+        'hipi-i2c' => 'i2c',
+        'hipi-pud' => 'gpio',
+    };
+    
     # install setuid executables
-    for my $fname ( qw( hipi-i2c ) ) {
+    for my $fname ( qw( hipi-i2c hipi-pud ) ) {
+        my $gname = $suidgroups->{$fname};
         $self->log_info(qq(Installing $fname\n));
         my $src = qq(suidbin/$fname);
         my $tgt = qq(/usr/local/bin/$fname);
         my $command = qq(sudo cp \"$src\" \"$tgt\");
         
         system($command) and die qq(Failed to install $fname script : $!);
-        $command = qq(sudo chown root:i2c \"$tgt\");
+        $command = qq(sudo chown root:$gname \"$tgt\");
         system($command) and die qq(Failed to set root ownership for $fname script : $!);
         $command = qq(sudo chmod 4754 \"$tgt\");
         system($command) and die qq(Failed to set suid mode for $fname script : $!);

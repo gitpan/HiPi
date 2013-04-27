@@ -2,7 +2,7 @@
 # Package       HiPi::Device::GPIO
 # Description:  System GPIO Device
 # Created       Wed Feb 20 02:40:29 2013
-# SVN Id        $Id: GPIO.pm 1733 2013-04-23 22:13:29Z Mark Dootson $
+# SVN Id        $Id: GPIO.pm 1754 2013-04-27 00:01:50Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -23,7 +23,7 @@ use Carp;
 use HiPi::Device::GPIO::Pin;
 use Time::HiRes;
 
-our $VERSION = '0.28';
+our $VERSION ='0.32';
 
 use constant {
     DEV_GPIO_PIN_STATUS_NONE         => 0x00,
@@ -65,6 +65,7 @@ sub export_pin {
     if( !-d $pinroot ) {
         HiPi::system_sudo_shell(qq(/bin/echo $pinno > /sys/class/gpio/export)) and croak qq(failed to export pin $pinno : $!);
     }
+    
     {
         # We have to wait for the system to export the pin correctly.
         # Max 10 seconds
@@ -89,6 +90,8 @@ sub export_pin {
             HiPi::system_sudo( qq(chown root:$gname $pinroot/$fname) ) and croak qq(failed to change group for pin $pinno : $!);
         }
     }
+    
+    $self->get_pin( $pinno );
 }
 
 sub unexport_pin {

@@ -20,7 +20,7 @@
 
 <A HREF="mod_device.htm"><img align=center src="back.png" BORDER=0 ALT="Previous"></A>
 
-<A HREF="hipi-device-gpio-pin.htm"><img align=center src="forward.png" BORDER=0 ALT="Next"></A>
+<A HREF="mod_device_i2c.htm"><img align=center src="forward.png" BORDER=0 ALT="Next"></A>
 </TD>
 </TR>
 <TR>
@@ -89,7 +89,11 @@ the pin id constants exported by HiPi::Constant module if you wish.</p>
 
     Will export the specified pin id so that it may be accessed
     using the kernel device driver. The script user must have 
-    permissions to export device driver pins.
+    permissions to export device driver pins ( probably 
+    conferred by membership of gpio group).
+    
+    The method returns a <A HREF="pin_modules_gpio.htm">HiPi::Device::GPIO::Pin</A> object for the 
+    specified pin number. (see also $dev->get_pin( $pinid ) ).
     
     see : <A HREF="topic_gpiodev.htm">GPIO Device Driver</A></pre>
 <h5>$dev->unexport_pin( $pinid );</h5>
@@ -103,7 +107,7 @@ the pin id constants exported by HiPi::Constant module if you wish.</p>
 <h5>my $pinobj = $dev->get_pin( $pinid );</h5>
 <pre>    $pinid  GPIO Pin Number
 
-    returns an object instance of <A HREF="hipi-device-gpio-pin.htm">HiPi::Device::GPIO::Pin</A>
+    returns an object instance of <A HREF="pin_modules_gpio.htm">HiPi::Device::GPIO::Pin</A>
 
 </pre>
 </FONT>
@@ -120,7 +124,7 @@ the pin id constants exported by HiPi::Constant module if you wish.</p>
 
 <A HREF="mod_device.htm"><img align=center src="back.png" BORDER=0 ALT="Previous"></A>
 
-<A HREF="hipi-device-gpio-pin.htm"><img align=center src="forward.png" BORDER=0 ALT="Next"></A>
+<A HREF="mod_device_i2c.htm"><img align=center src="forward.png" BORDER=0 ALT="Next"></A>
 </center>
 
 <HR>

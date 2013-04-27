@@ -61,6 +61,18 @@
              <PARAM NAME="Local" VALUE="control_app_w1dev.htm">
          </OBJECT>
     <LI> <OBJECT TYPE="text/sitemap">
+             <PARAM NAME="Name" VALUE="Command Line Utilities">
+             <PARAM NAME="Local" VALUE="command_line_utils.htm">
+         </OBJECT>
+    <LI> <OBJECT TYPE="text/sitemap">
+             <PARAM NAME="Name" VALUE="HiPi I2C Utility">
+             <PARAM NAME="Local" VALUE="command_line_utils_i2c.htm">
+         </OBJECT>
+    <LI> <OBJECT TYPE="text/sitemap">
+             <PARAM NAME="Name" VALUE="HiPi PUD Utility">
+             <PARAM NAME="Local" VALUE="command_line_utils_pud.htm">
+         </OBJECT>
+    <LI> <OBJECT TYPE="text/sitemap">
              <PARAM NAME="Name" VALUE="GPIO Access Modules">
              <PARAM NAME="Local" VALUE="mod_gpio.htm">
          </OBJECT>
@@ -215,6 +227,10 @@
     <LI> <OBJECT TYPE="text/sitemap">
              <PARAM NAME="Name" VALUE="Loading Drivers at Startup">
              <PARAM NAME="Local" VALUE="topic_load_drivers_startup.htm">
+         </OBJECT>
+    <LI> <OBJECT TYPE="text/sitemap">
+             <PARAM NAME="Name" VALUE="Second I2C Bus">
+             <PARAM NAME="Local" VALUE="topic_i2cbus_2.htm">
          </OBJECT>
 </UL>
 </BODY></HTML>

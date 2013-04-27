@@ -3,7 +3,7 @@
 #########################################################################################
 # Description:  Direct access to I2C functions via /dev/mem
 # Created       Mon Mar 18 22:38:41 2013
-# svn id        $Id: hipi-i2c.pl 1732 2013-04-09 18:23:09Z Mark Dootson $
+# svn id        $Id: hipi-i2c.pl 1753 2013-04-25 15:32:30Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -18,7 +18,7 @@ use HiPi::BCM2835::I2C qw( :all );
 use Try::Tiny;
 use Carp;
 
-our $VERSION ='0.28';
+our $VERSION ='0.32';
 
 my @args = @ARGV;
 

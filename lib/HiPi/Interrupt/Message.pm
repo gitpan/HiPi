@@ -1,9 +1,8 @@
-#!/usr/bin/perl
-
 #########################################################################################
-# Description:  HiPi GUI Control
-# Created       Mon Feb 25 13:38:42 2013
-# svn id        $Id:$
+# Package       HiPi::Interrupt::Message
+# Description:  Interrupt Message
+# Created       Wed Apr 24 17:17:43 2013
+# SVN Id        $Id: Message.pm 1751 2013-04-24 23:30:51Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -11,23 +10,20 @@
 #               version.
 #########################################################################################
 
+package HiPi::Interrupt::Message;
+
+#########################################################################################
+
 use strict;
 use warnings;
+use parent qw( HiPi::Class );
 
-our $VERSION ='0.32';
+__PACKAGE__->create_accessors( qw( action pinid error value timestamp msgtext pinclass ) );
 
-use HiPi::Utils qw( is_raspberry );
-
-if( is_raspberry && $<) {
-    my $msg = qq(\nThis script requires administrator permissions to run. );
-    $msg .= qq(You must be in a graphical environment. Run the script using:);
-    $msg .= qq(\n\n\tgksudo hipi-control-gui\n\n);
-    print $msg;
-    exit(0);
+sub new {
+    my ($class, $params) = @_;
+    my $self = $class->SUPER::new(%$params);
+    return $self;
 }
-
-require HiPi::Apps::Control;
-my $app = HiPi::Apps::Control->new;
-$app->MainLoop;
 
 1;
