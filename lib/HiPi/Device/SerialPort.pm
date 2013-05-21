@@ -2,7 +2,7 @@
 # Package       HiPi::Device::SerialPort
 # Description:  Serial Port driver
 # Created       Sat Nov 24 19:29:33 2012
-# SVN Id        $Id: SerialPort.pm 1075 2013-03-12 02:53:45Z Mark Dootson $
+# SVN Id        $Id: SerialPort.pm 1760 2013-05-21 02:24:24Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -82,6 +82,17 @@ sub write {
     my $result = $self->serialdriver->write($buffer);
     $self->serialdriver->write_drain;
     return $result;
+}
+
+sub can_read {
+    my $self = shift;
+}
+
+sub read {
+    my($self, $timeout) = @_;
+    $timeout ||= 0;
+    
+    
     
 }
 

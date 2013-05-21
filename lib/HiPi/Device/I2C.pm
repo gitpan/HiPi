@@ -2,7 +2,7 @@
 # Package       HiPi::Device::I2C
 # Description:  Wrapper for I2C communucation
 # Created       Fri Nov 23 13:55:49 2012
-# SVN Id        $Id: I2C.pm 1753 2013-04-25 15:32:30Z Mark Dootson $
+# SVN Id        $Id: I2C.pm 1759 2013-04-27 13:53:07Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -27,7 +27,7 @@ use HiPi::Constant qw( :raspberry );
 use HiPi::Utils qw( is_raspberry );
 use Try::Tiny;
 
-our $VERSION ='0.32';
+our $VERSION ='0.33';
 
 __PACKAGE__->create_accessors( qw ( fh fno address i2cbuffer busmode ) );
 

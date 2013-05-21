@@ -29,12 +29,38 @@
             "Module::Build" : 0,
             "perl" : "v5.14.0"
          }
+      },
+      "runtime" : {
+         "requires" : {
+            "Class::Accessor" : 0,
+            "Device::SerialPort" : 0,
+            "ExtUtils::ParseXS" : 0,
+            "ExtUtils::XSpp" : 0,
+            "File::Copy::Recursive" : 0,
+            "File::Slurp" : 0,
+            "File::chdir" : 0,
+            "IO::Epoll" : 0,
+            "IO::Multiplex" : 0,
+            "IO::String" : 0,
+            "IO::Stringy" : 0,
+            "LWP::UserAgent" : 0,
+            "Module::Info" : 0,
+            "OpenGL" : 0,
+            "PAR::Dist" : 0,
+            "Text::Diff" : 0,
+            "Text::Patch" : 0,
+            "Thread::Queue" : 0,
+            "Try::Tiny" : 0,
+            "UNIVERSAL::require" : 0,
+            "threads" : 0,
+            "threads::shared" : 0
+         }
       }
    },
    "provides" : {
       "HiPi" : {
          "file" : "lib/HiPi.pm",
-         "version" : "0.32"
+         "version" : "0.33"
       },
       "HiPi::Apps::Control" : {
          "file" : "lib/HiPi/Apps/Control.pm",
@@ -218,7 +244,7 @@
       },
       "HiPi::BCM2835" : {
          "file" : "lib/HiPi/BCM2835.pm",
-         "version" : "0.32"
+         "version" : "0.33"
       },
       "HiPi::BCM2835::I2C" : {
          "file" : "lib/HiPi/BCM2835/I2C.pm",
@@ -226,7 +252,7 @@
       },
       "HiPi::BCM2835::Pin" : {
          "file" : "lib/HiPi/BCM2835/Pin.pm",
-         "version" : "0.32"
+         "version" : "0.33"
       },
       "HiPi::Class" : {
          "file" : "lib/HiPi/Class.pm",
@@ -250,15 +276,15 @@
       },
       "HiPi::Device::GPIO" : {
          "file" : "lib/HiPi/Device/GPIO.pm",
-         "version" : "0.32"
+         "version" : "0.33"
       },
       "HiPi::Device::GPIO::Pin" : {
          "file" : "lib/HiPi/Device/GPIO/Pin.pm",
-         "version" : "0.32"
+         "version" : "0.33"
       },
       "HiPi::Device::I2C" : {
          "file" : "lib/HiPi/Device/I2C.pm",
-         "version" : "0.32"
+         "version" : "0.33"
       },
       "HiPi::Device::OneWire" : {
          "file" : "lib/HiPi/Device/OneWire.pm",
@@ -266,7 +292,7 @@
       },
       "HiPi::Device::SPI" : {
          "file" : "lib/HiPi/Device/SPI.pm",
-         "version" : "0.32"
+         "version" : "0.33"
       },
       "HiPi::Device::SerialPort" : {
          "file" : "lib/HiPi/Device/SerialPort.pm",
@@ -283,6 +309,14 @@
       "HiPi::Interface::DS18X20" : {
          "file" : "lib/HiPi/Interface/DS18X20.pm",
          "version" : "0.22"
+      },
+      "HiPi::Interface::GPS::NMEA" : {
+         "file" : "lib/HiPi/Interface/GPS/NMEA.pm",
+         "version" : "0.33"
+      },
+      "HiPi::Interface::GPS::SRF" : {
+         "file" : "lib/HiPi/Interface/GPS/SRF.pm",
+         "version" : "0.33"
       },
       "HiPi::Interface::HD44780" : {
          "file" : "lib/HiPi/Interface/HD44780.pm",
@@ -338,7 +372,7 @@
       },
       "HiPi::Interrupt::Handler" : {
          "file" : "lib/HiPi/Interrupt/Handler.pm",
-         "version" : 0
+         "version" : "0.33"
       },
       "HiPi::Interrupt::Message" : {
          "file" : "lib/HiPi/Interrupt/Message.pm",
@@ -362,15 +396,15 @@
       },
       "HiPi::Utils" : {
          "file" : "lib/HiPi/Utils.pm",
-         "version" : "0.32"
+         "version" : "0.33"
       },
       "HiPi::Utils::Exec" : {
          "file" : "lib/HiPi/Utils/Exec.pm",
-         "version" : "0.32"
+         "version" : "0.33"
       },
       "HiPi::Wiring" : {
          "file" : "lib/HiPi/Wiring.pm",
-         "version" : "0.32"
+         "version" : "0.33"
       },
       "HiPi::Wiring::Pin" : {
          "file" : "lib/HiPi/Wiring/Pin.pm",
@@ -476,5 +510,5 @@
          "http://www.gnu.org/licenses/gpl-3.0.txt"
       ]
    },
-   "version" : "0.32"
+   "version" : "0.33"
 }

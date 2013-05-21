@@ -2,7 +2,7 @@
 # Package       HiPi::Interrupt::Handler
 # Description:  Main Thread Interrupt Handler
 # Created       Wed Apr 24 16:22:56 2013
-# SVN Id        $Id: Handler.pm 1754 2013-04-27 00:01:50Z Mark Dootson $
+# SVN Id        $Id: Handler.pm 1760 2013-05-21 02:24:24Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -21,6 +21,8 @@ use parent qw( HiPi::Class );
 use Carp;
 use HiPi::Interrupt::Message;
 use Time::HiRes;
+
+our $VERSION = '0.33';
 
 __PACKAGE__->create_accessors( qw(
     docontinue
@@ -95,6 +97,12 @@ sub stop {
 sub sleep_timeout {
     my($self, $millisecs) = @_;
     Time::HiRes::usleep( int($millisecs * 1000) );
+}
+
+sub get_timestamp {
+    my ($secs, $msecs) = Time::HiRes::gettimeofday();
+    my $timestamp = ($secs * 1000) + int($msecs / 1000);
+    return( $timestamp );
 }
 
 sub poll {

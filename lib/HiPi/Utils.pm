@@ -2,7 +2,7 @@
 # Package       HiPi::Utils
 # Description:  HiPi Utilities
 # Created       Sun Feb 24 05:16:17 2013
-# SVN Id        $Id: Utils.pm 1753 2013-04-25 15:32:30Z Mark Dootson $
+# SVN Id        $Id: Utils.pm 1760 2013-05-21 02:24:24Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -19,10 +19,9 @@ use warnings;
 use Carp;
 require Exporter;
 use base qw( Exporter );
+use XSLoader;
 
-our $VERSION ='0.32';
-
-XSLoader::load('HiPi::Utils', $VERSION) if is_raspberry();
+our $VERSION ='0.33';
 
 our $defaultuser = 'pi';
 
@@ -78,6 +77,8 @@ our ($_israspberry, $_isunix, $_iswindows, $_ismac, $_homedir) = (0,0,0,0, '');
     }
     
 }
+
+XSLoader::load('HiPi::Utils', $VERSION) if is_raspberry();
 
 sub is_raspberry { $_israspberry; }
 sub is_windows { $_iswindows; }
@@ -347,7 +348,6 @@ sub set_modprobe_conf {
     HiPi::Device::SPI->set_bufsiz($rh->{spidev}->{bufsiz});
 
 }
-
 
 sub drop_permissions_name {
     my($username, $groupname) = @_;

@@ -2,7 +2,7 @@
 # Package       HiPi::Wiring
 # Description:  Wrapper for wiringPi C library
 # Created       Fri Nov 23 13:55:49 2012
-# SVN Id        $Id: Wiring.pm 1753 2013-04-25 15:32:30Z Mark Dootson $
+# SVN Id        $Id: Wiring.pm 1760 2013-05-21 02:24:24Z Mark Dootson $
 # Copyright:    Copyright (c) 2012 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -21,7 +21,7 @@ use base qw( Exporter );
 use XSLoader;
 use HiPi::Utils qw( is_raspberry );
 
-our $VERSION ='0.32';
+our $VERSION ='0.33';
 
 XSLoader::load('HiPi::Wiring', $VERSION) if is_raspberry;
 
@@ -75,6 +75,37 @@ use constant {
     $EXPORT_TAGS{wiring}  = \@const;
 }
 
+# Perl implemented functions
+
+sub serialPrintf {
+    my ($filedesc, $format, @args) = @_;
+    
+    my $buffer;
+    
+    if( @args ) {
+        $buffer = sprintf($format, @args);
+    } else {
+        $buffer = $format;
+    }
+    
+    HiPi::Wiring::serialPuts( $filedesc, $buffer );
+    return undef;
+}
+
+sub lcdPrintf {
+    my ($filedesc, $format, @args) = @_;
+    
+    my $buffer;
+    
+    if( @args ) {
+        $buffer = sprintf($format, @args);
+    } else {
+        $buffer = $format;
+    }
+    
+    HiPi::Wiring::lcdPuts( $filedesc, $buffer );
+    return undef;
+}
 
 1;
 

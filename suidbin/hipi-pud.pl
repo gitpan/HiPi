@@ -3,7 +3,7 @@
 #########################################################################################
 # Description:  Access to pull up pull down functions via /dev/mem
 # Created       Mon Mar 18 22:38:41 2013
-# svn id        $Id: hipi-pud.pl 1753 2013-04-25 15:32:30Z Mark Dootson $
+# svn id        $Id: hipi-pud.pl 1759 2013-04-27 13:53:07Z Mark Dootson $
 # Copyright:    Copyright (c) 2013 Mark Dootson
 # Licence:      This work is free software; you can redistribute it and/or modify it 
 #               under the terms of the GNU General Public License as published by the 
@@ -18,7 +18,7 @@ use HiPi::BCM2835 qw( :all );
 use Carp;
 use HiPi::RaspberryPi;
 
-our $VERSION ='0.32';
+our $VERSION ='0.33';
 
 my( $inputpinid, $inputaction ) = @ARGV;
 
